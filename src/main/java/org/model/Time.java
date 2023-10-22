@@ -1,4 +1,4 @@
-package org.example;
+package org.model;
 
 import java.time.LocalTime;
 import java.util.Date;
@@ -14,17 +14,23 @@ public class Time {
     /*
     String sDate1="31/12/1998";
     Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(sDate1);
-     */
-    /*
     LocalTime time = LocalTime.parse("12:34:45");
      */
     private Date startDate;
     private Date endDate;
     private LocalTime startTime;
     private LocalTime endTime;
-    // TODO: vrv jos nesto
+    //TODO: vrv jos nesto
 
-    public String getWeekDay(Date date) // TODO: moze string pa da se prebaci u date u metodi
+
+    public Time(Date startDate, Date endDate, LocalTime startTime, LocalTime endTime) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public String getWeekDay(Date date) //TODO: moze string pa da se prebaci u date u metodi
     {
         int num = date.getDay();
         String dayOfTheWeek = null;
@@ -42,5 +48,20 @@ public class Time {
         return dayOfTheWeek;
     }
 
+    public Date getStartDate() {
+        return startDate;
+    }
 
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+    //TODO: equals??
 }
