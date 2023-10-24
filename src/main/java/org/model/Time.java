@@ -1,8 +1,12 @@
 package org.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalTime;
 import java.util.Date;
-
+@Getter
+@Setter
 public class Time {
 
     /*
@@ -48,20 +52,5 @@ public class Time {
         return dayOfTheWeek;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
     //TODO: equals??
 }

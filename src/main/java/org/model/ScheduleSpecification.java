@@ -11,6 +11,8 @@ import java.util.Map;
 public abstract class ScheduleSpecification {
 
     private List<Term> terms = new ArrayList<>();
+    private List<Room> rooms = new ArrayList<>();
+
     /*
     - inicijalizacija rasporeda
     - dodavanje prostorija sa osobinama (kapacitet, računari, projektor)
@@ -19,15 +21,26 @@ public abstract class ScheduleSpecification {
     - premeštanje termina - brisanje i dodavanje novog termina sa istim vezanim podacima
     */
     public abstract void initialize();
-    public abstract void addRoom(int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException;
+    public void addRoom(int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException {
+        Room room = new Room("name", capacity, equipment);
+        if(rooms.contains(room))
+            throw new RoomAlreadyExistsException();
+        else
+            rooms.add(room);
+    }
+
+    // bez opreme
+    public void addRoom(int capacity) throws RoomAlreadyExistsException {
+        addRoom(capacity, null);
+    }
     // TODO: brisanje prostorija ili izmena?
     public abstract void addTerm(Term term) throws TermAlreadyExistsException;
-    // TODO: termExists ce se koristiti za dodavanje, brisanje i izmenu
+    // TODO: termAvailable ce se koristiti za dodavanje, brisanje i izmenu
     public abstract boolean termAvailable(Term term);
     public abstract void deleteTerm(Term term) throws TermDoesNotExistException;
     public abstract void changeTerm(Term oldTerm, Term newTerm) throws TermDoesNotExistException;
 
-    //TODO: izlistavanje termina, prostorija...
+    //TODO: izlistavanje slobodnih termina, prostorija...
     public abstract void save(String file);
     public abstract void load(String file);
     public List<Term> getTerms() {
