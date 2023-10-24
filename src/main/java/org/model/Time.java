@@ -22,6 +22,8 @@ public class Time {
      */
     private Date startDate;
     private Date endDate;
+
+    // date je samo datum, localtime je samo vreme, a localdatetime je i datum i vreme
     private LocalTime startTime;
     private LocalTime endTime;
     //TODO: vrv jos nesto

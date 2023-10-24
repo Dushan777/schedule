@@ -41,8 +41,8 @@ public abstract class ScheduleSpecification {
     public abstract void changeTerm(Term oldTerm, Term newTerm) throws TermDoesNotExistException;
 
     //TODO: izlistavanje slobodnih termina, prostorija...
-    public abstract void save(String file);
-    public abstract void load(String file);
+    public abstract void save(String filepath, String fileName);
+    public abstract void load(String filename);
     public List<Term> getTerms() {
         return terms;
     }
