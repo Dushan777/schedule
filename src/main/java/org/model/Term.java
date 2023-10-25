@@ -16,19 +16,9 @@ public class Term {
     public Term(Room room, Time time, Map<String, String> additionalData) {
         this.room = room;
         this.time = time;
-        this.additionalData = additionalData;
+        this.additionalData = (additionalData != null) ? additionalData : new HashMap<>();
     }
 
-
-    @Override
-    public boolean equals(Object obj) {
-        Term term = (Term) obj;
-        if(term.time.equals(this.time))
-        {
-            return term.room.equals(this.room);
-        }
-        return false;
-    }
 
 
 }

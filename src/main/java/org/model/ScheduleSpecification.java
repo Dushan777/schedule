@@ -1,15 +1,22 @@
 package org.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.exceptions.RoomAlreadyExistsException;
 import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
+@Getter
+@Setter
 public abstract class ScheduleSpecification {
 
+    private Date startDate;
+    private Date endDate;
+    private List<Date> excludedDays = new ArrayList<>();
     private List<Term> terms = new ArrayList<>();
     private List<Room> rooms = new ArrayList<>();
 
@@ -21,8 +28,9 @@ public abstract class ScheduleSpecification {
     - premeštanje termina - brisanje i dodavanje novog termina sa istim vezanim podacima
     */
     public abstract void initialize();
-    public void addRoom(int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException {
-        Room room = new Room("name", capacity, equipment);
+    // da li ovde liste da se inicijalizuju i za sta bismo koristili, tj. kako se koristi metoda u korisnickim programima?
+    public void addRoom(String name, int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException {
+        Room room = new Room(name, capacity, equipment);
         if(rooms.contains(room))
             throw new RoomAlreadyExistsException();
         else
@@ -30,11 +38,12 @@ public abstract class ScheduleSpecification {
     }
 
     // bez opreme
-    public void addRoom(int capacity) throws RoomAlreadyExistsException {
-        addRoom(capacity, null);
+    public void addRoom(String name, int capacity) throws RoomAlreadyExistsException {
+        addRoom(name, capacity, null);
     }
     // TODO: brisanje prostorija ili izmena?
     public abstract void addTerm(Term term) throws TermAlreadyExistsException;
+    // da li Term da se prosledi ili Time, Date...?
     // TODO: termAvailable ce se koristiti za dodavanje, brisanje i izmenu
     public abstract boolean termAvailable(Term term);
     public abstract void deleteTerm(Term term) throws TermDoesNotExistException;

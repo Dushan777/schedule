@@ -54,5 +54,4 @@ public class Time {
         return dayOfTheWeek;
     }
 
-    //TODO: equals??
 }

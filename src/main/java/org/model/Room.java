@@ -4,6 +4,7 @@ package org.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.Map;
 @Getter
 @Setter
@@ -16,8 +17,9 @@ public class Room {
     public Room(String name, int capacity, Map<String, Integer> equipment) {
         this.name = name;
         this.capacity = capacity;
-        this.equipment = equipment;
+        this.equipment = (equipment != null) ? equipment : new HashMap<>();;
     }
+
     @Override
     public boolean equals(Object obj) {
         return this.name.equals(((Room)obj).name);
