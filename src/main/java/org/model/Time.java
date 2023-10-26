@@ -54,4 +54,9 @@ public class Time {
         return dayOfTheWeek;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        Time time = (Time) obj;
+        return this.startDate.equals(time.startDate) && this.endDate.equals(time.endDate) && this.startTime.equals(time.startTime) && this.endTime.equals(time.endTime);
+    }
 }

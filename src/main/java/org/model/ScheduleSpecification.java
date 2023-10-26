@@ -6,6 +6,7 @@ import org.exceptions.RoomAlreadyExistsException;
 import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,8 +28,7 @@ public abstract class ScheduleSpecification {
     - brisanje zauzetog termina
     - premeštanje termina - brisanje i dodavanje novog termina sa istim vezanim podacima
     */
-    public abstract void initialize();
-    // da li ovde liste da se inicijalizuju i za sta bismo koristili, tj. kako se koristi metoda u korisnickim programima?
+    public abstract void initialize();  //mogu pocetne vrednosti
     public void addRoom(String name, int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException {
         Room room = new Room(name, capacity, equipment);
         if(rooms.contains(room))
@@ -43,12 +43,21 @@ public abstract class ScheduleSpecification {
     }
     // TODO: brisanje prostorija ili izmena?
     public abstract void addTerm(Term term) throws TermAlreadyExistsException;
-    // da li Term da se prosledi ili Time, Date...?
+
+
     // TODO: termAvailable ce se koristiti za dodavanje, brisanje i izmenu
     public abstract boolean termAvailable(Term term);
-    public abstract void deleteTerm(Term term) throws TermDoesNotExistException;
-    public abstract void changeTerm(Term oldTerm, Term newTerm) throws TermDoesNotExistException;
 
+    public void deleteTerm(Term term) throws TermDoesNotExistException {
+        if(!terms.contains(term))
+            throw new TermDoesNotExistException();
+        else
+            terms.remove(term);
+    }
+
+    // mozda changeTerm ovde da se implementira
+    public abstract void changeTerm(Term oldTerm, Term newTerm) throws TermDoesNotExistException, TermAlreadyExistsException;
+    // moze da se napravi nova klasa kao littleTerm koja ce da sadrzi samo vreme i prostoriju
     //TODO: izlistavanje slobodnih termina, prostorija...
     public abstract void save(String filepath, String fileName);
     public abstract void load(String filename);

@@ -19,6 +19,9 @@ public class Term {
         this.additionalData = (additionalData != null) ? additionalData : new HashMap<>();
     }
 
-
-
+    @Override
+    public boolean equals(Object obj) {
+        Term term = (Term) obj;
+        return this.getRoom().equals(term.getRoom()) && this.getTime().equals(term.getTime());
+    }
 }
