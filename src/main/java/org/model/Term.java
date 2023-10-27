@@ -21,6 +21,8 @@ public class Term {
 
     @Override
     public boolean equals(Object obj) {
+        if(!(obj instanceof Term))
+            return false;
         Term term = (Term) obj;
         return this.getRoom().equals(term.getRoom()) && this.getTime().equals(term.getTime());
     }

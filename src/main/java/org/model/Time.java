@@ -3,6 +3,7 @@ package org.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 @Getter
@@ -20,35 +21,46 @@ public class Time {
     Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(sDate1);
     LocalTime time = LocalTime.parse("12:34:45");
      */
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     // date je samo datum, localtime je samo vreme, a localdatetime je i datum i vreme
     private LocalTime startTime;
     private LocalTime endTime;
-    //TODO: vrv jos nesto
 
-
-    public Time(Date startDate, Date endDate, LocalTime startTime, LocalTime endTime) {
+    // za prvu impl. startDateTime i endDate ce biti isti
+    public Time(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.startTime = startTime;
         this.endTime = endTime;
     }
-
-    public String getWeekDay(Date date) //TODO: moze string pa da se prebaci u date u metodi
+    public Time(LocalDate startDate, LocalDate endDate, LocalTime startTime, int durationInMinutes) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = startTime.plusMinutes(durationInMinutes);
+    }
+    public static String getWeekDay(LocalDate date) //TODO: moze string pa da se prebaci u date u metodi
     {
-        int num = date.getDay();
+        int num = date.getDayOfWeek().getValue();
         String dayOfTheWeek = null;
         switch (num)
         {
-            case 0: dayOfTheWeek = "Sunday"; break;
-            case 1: dayOfTheWeek = "Monday"; break;
-            case 2: dayOfTheWeek = "Tuesday"; break;
-            case 3: dayOfTheWeek = "Wednesday"; break;
-            case 4: dayOfTheWeek = "Thursday"; break;
-            case 5: dayOfTheWeek = "Friday"; break;
-            case 6: dayOfTheWeek = "Saturday"; break;
+            case 1: dayOfTheWeek = "Monday";
+                break;
+            case 2: dayOfTheWeek = "Tuesday";
+                break;
+            case 3: dayOfTheWeek = "Wednesday";
+                break;
+            case 4: dayOfTheWeek = "Thursday";
+                break;
+            case 5: dayOfTheWeek = "Friday";
+                break;
+            case 6: dayOfTheWeek = "Saturday";
+                break;
+            case 7: dayOfTheWeek = "Sunday";
+                break;
 
         }
         return dayOfTheWeek;
@@ -56,6 +68,8 @@ public class Time {
 
     @Override
     public boolean equals(Object obj) {
+        if(!(obj instanceof Time))
+            return false;
         Time time = (Time) obj;
         return this.startDate.equals(time.startDate) && this.endDate.equals(time.endDate) && this.startTime.equals(time.startTime) && this.endTime.equals(time.endTime);
     }
