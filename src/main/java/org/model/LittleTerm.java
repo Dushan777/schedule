@@ -14,4 +14,12 @@ public class LittleTerm {
         this.room = room;
         this.time = time;
     }
+
+    @Override
+    public String toString() {
+        return "LittleTerm{" +
+                "room=" + room +
+                ", time=" + time +
+                '}';
+    }
 }

@@ -26,4 +26,13 @@ public class Term {
         Term term = (Term) obj;
         return this.getRoom().equals(term.getRoom()) && this.getTime().equals(term.getTime());
     }
+
+    @Override
+    public String toString() {
+        return "Term{" +
+                "room=" + room +
+                ", time=" + time +
+                ", additionalData=" + additionalData +
+                '}';
+    }
 }

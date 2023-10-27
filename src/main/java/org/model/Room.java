@@ -26,4 +26,13 @@ public class Room {
             return false;
         return this.name.equals(((Room)obj).name);
     }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "name='" + name + '\'' +
+                ", capacity=" + capacity +
+                ", equipment=" + equipment +
+                '}';
+    }
 }

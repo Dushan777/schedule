@@ -73,4 +73,14 @@ public class Time {
         Time time = (Time) obj;
         return this.startDate.equals(time.startDate) && this.endDate.equals(time.endDate) && this.startTime.equals(time.startTime) && this.endTime.equals(time.endTime);
     }
+
+    @Override
+    public String toString() {
+        return "Time{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }

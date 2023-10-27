@@ -8,9 +8,7 @@ import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 @Getter
@@ -39,6 +37,14 @@ public abstract class ScheduleSpecification {
      * @throws DifferentDateException
      */
     public abstract void initialize(LocalDate startDate, LocalDate endDate, List<LocalDate> excludedDays) throws DifferentDateException;  //mogu pocetne vrednosti
+
+    /**
+     * add room to schedule with equipment
+     * @param name
+     * @param capacity
+     * @param equipment
+     * @throws RoomAlreadyExistsException
+     */
     public void addRoom(String name, int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException {
         Room room = new Room(name, capacity, equipment);
         if(rooms.contains(room))
@@ -47,30 +53,72 @@ public abstract class ScheduleSpecification {
             rooms.add(room);
     }
 
-    // bez opreme
+    /**
+     * add room to schedule without equipment
+     * @param name
+     * @param capacity
+     * @throws RoomAlreadyExistsException
+     */
     public void addRoom(String name, int capacity) throws RoomAlreadyExistsException {
         addRoom(name, capacity, null);
     }
     // TODO: brisanje prostorija ili izmena?
+
+    /**
+     * add term to schedule
+     * @param term
+     * @param weekDay
+     * @throws TermAlreadyExistsException
+     */
     public abstract void addTerm(Term term,String weekDay) throws TermAlreadyExistsException;
 
 
-    // TODO: termAvailable ce se koristiti za dodavanje, brisanje i izmenu
+    // TODO: termAvailable ce se koristiti za dodavanje i izmenu
+
+    /**
+     * check if term is available
+     * @param term
+     * @param weekDay
+     * @return
+     */
+
     public abstract boolean termAvailable(Term term, String weekDay);
 
     //TODO: pri proveri zauzetosti uzeti u obzir excludedDays
-    public void deleteTerm(Term term, String weekDay) throws TermDoesNotExistException {
-        if(!terms.contains(term))
-            throw new TermDoesNotExistException();
-        else
-            terms.remove(term);
-    }
 
-    // mozda changeTerm ovde da se implementira
+    /**
+     * delete term from schedule
+     * @param term
+     * @param weekDay
+     * @throws TermDoesNotExistException
+     */
+    public abstract void deleteTerm(Term term, String weekDay) throws TermDoesNotExistException;
+
+
+    /**
+     * change term with keeping additional data
+     * @param oldTerm
+     * @param newTerm
+     * @param weekDay
+     * @throws TermDoesNotExistException
+     * @throws TermAlreadyExistsException
+     */
+    //TODO: mozda changeTerm ovde da se implementira
     public abstract void changeTerm(Term oldTerm, LittleTerm newTerm, String weekDay) throws TermDoesNotExistException, TermAlreadyExistsException;
-    // moze da se napravi nova klasa kao littleTerm koja ce da sadrzi samo vreme i prostoriju
+
     //TODO: izlistavanje slobodnih termina, prostorija...
+
+    /**
+     * save schedule to file
+     * @param filepath
+     * @param fileName
+     */
     public abstract void save(String filepath, String fileName);
+
+    /**
+     * load schedule from file
+     * @param filename
+     */
     public abstract void load(String filename);
     public List<Term> getTerms() {
         return terms;
