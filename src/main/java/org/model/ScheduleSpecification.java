@@ -79,11 +79,21 @@ public abstract class ScheduleSpecification {
      * check if term is available
      * @param term
      * @param weekDay
-     * @return
+     * @return true if term is available, false otherwise
      */
 
     public abstract boolean termAvailable(Term term, String weekDay);
 
+    /**
+     * check if term is booked
+     * @param term
+     * @param weekDay
+     * @return true if term is booked, false otherwise
+     */
+    // NE MORA DA SE TESTIRA
+    public boolean termBooked(Term term, String weekDay) {
+        return !termAvailable(term, weekDay);
+    }
     //TODO: pri proveri zauzetosti uzeti u obzir excludedDays
 
     /**
