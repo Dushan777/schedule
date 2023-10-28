@@ -17,9 +17,9 @@ public class Time {
     početka i završetka ili kao vreme početka i trajanje.
      */
     /*
-    String sDate1="31/12/1998";
-    Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(sDate1);
-    LocalTime time = LocalTime.parse("12:34:45");
+    String dateStr = "2023-10-26";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(dateStr, formatter);
      */
     private LocalDate startDate;
     private LocalDate endDate;

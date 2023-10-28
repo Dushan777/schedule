@@ -34,9 +34,8 @@ public abstract class ScheduleSpecification {
      * @param startDate
      * @param endDate
      * @param excludedDays
-     * @throws DifferentDateException
      */
-    public abstract void initialize(LocalDate startDate, LocalDate endDate, List<LocalDate> excludedDays) throws DifferentDateException;  //mogu pocetne vrednosti
+    public abstract void initialize(LocalDate startDate, LocalDate endDate, List<LocalDate> excludedDays);  //mogu pocetne vrednosti
 
     /**
      * add room to schedule with equipment
@@ -69,8 +68,9 @@ public abstract class ScheduleSpecification {
      * @param term
      * @param weekDay
      * @throws TermAlreadyExistsException
+     * @throws DifferentDateException
      */
-    public abstract void addTerm(Term term,String weekDay) throws TermAlreadyExistsException;
+    public abstract void addTerm(Term term,String weekDay) throws TermAlreadyExistsException,DifferentDateException;
 
 
     // TODO: termAvailable ce se koristiti za dodavanje i izmenu
@@ -104,7 +104,7 @@ public abstract class ScheduleSpecification {
      * @throws TermAlreadyExistsException
      */
     //TODO: mozda changeTerm ovde da se implementira
-    public abstract void changeTerm(Term oldTerm, LittleTerm newTerm, String weekDay) throws TermDoesNotExistException, TermAlreadyExistsException;
+    public abstract void changeTerm(Term oldTerm, LittleTerm newTerm, String weekDay) throws TermDoesNotExistException, TermAlreadyExistsException,DifferentDateException;
 
     //TODO: izlistavanje slobodnih termina, prostorija...
 
