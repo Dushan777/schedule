@@ -15,8 +15,8 @@ import java.util.Map;
 @Setter
 public abstract class ScheduleSpecification {
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDate beginningDate;
+    private LocalDate endingDate;
     private List<LocalDate> excludedDays = new ArrayList<>();
     private List<Term> terms = new ArrayList<>();
     private List<Room> rooms = new ArrayList<>();
