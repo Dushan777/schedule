@@ -19,6 +19,7 @@ public abstract class ScheduleSpecification {
     private LocalDate endingDate;
     private List<LocalDate> excludedDays = new ArrayList<>();
     private List<Term> terms = new ArrayList<>();
+
     private List<Room> rooms = new ArrayList<>();
 
     /*
@@ -152,9 +153,95 @@ public abstract class ScheduleSpecification {
     određeni termin slobodan ili zauzet, po raličitim kriterijumima kako je prethodno objašnjeno.
      */
 
+    /**
+     * Filter by rooms
+     * if name is "" or capacity <= 0 or equipment is empty, it is not used in filtering
+     * termss must not be null
+     * @param name
+     * @param capacity
+     * @param equipment
+     * @param termss
+     * @return filtered terms
+     */
+    public List<Term> filterByRooms(String name,int capacity, Map<String,Integer> equipment, List<Term> termss)
+    {
+        List<Term> filteredTerms = new ArrayList<>(termss);
+        for(Term t : termss)
+        {
+            if(capacity > 0 && t.getRoom().getCapacity() < capacity)
+                    filteredTerms.remove(t);
+            if(!name.equals("") && !t.getRoom().getName().equals(name))
+                    filteredTerms.remove(t);
+            if(!equipment.isEmpty() && !mapHasEquipment(t.getRoom().getEquipment(),equipment))
+                    filteredTerms.remove(t);
+        }
+        return filteredTerms;
+    }
 
+    // kod opcije za samo jedan dan necemo imati endDate i weekDay provere, ali mislim da ne treba jos jedna metoda
+    // jer je ovo dovoljno opsta, ali ovo je u slucaju da on ima obe opcije u obe implementacije sto je nama logicno
 
+    /**
+     * Filter by time or additional data
+     * if any part of time is null, it is not used in filtering
+     * if additionalData is empty, it is not used in filtering
+     * if weekDay is "", it is not used in filtering
+     * termss must not be null
+     * time is interval from-to
+     * @param time
+     * @param additionalData
+     * @param weekDay
+     * @param termss
+     * @return filtered terms
+     */
+    public List<Term> filterByTimeOrAdditionalData(Time time, Map<String,String> additionalData, String weekDay, List<Term> termss)
+    {
+        List<Term> filteredTerms = new ArrayList<>(termss);
+        for(Term t : termss)
+        {
+            if(!additionalData.isEmpty() && !mapHasAdditionalData(t.getAdditionalData(),additionalData))
+                filteredTerms.remove(t);
 
+            // ako prosledjeni pocinje nakon pocetka termina
+            if(time.getStartDate()!=null && time.getStartDate().isAfter(t.getTime().getStartDate()))
+                filteredTerms.remove(t);
+            // ako se prosledjeni zavrsava pre kraja termina
+            if(time.getEndDate()!=null && time.getEndDate().isBefore(t.getTime().getEndDate()))
+                filteredTerms.remove(t);
+
+            if(time.getStartTime()!=null && time.getStartTime().isAfter(t.getTime().getStartTime()))
+                filteredTerms.remove(t);
+
+            if(time.getEndTime()!=null && time.getEndTime().isBefore(t.getTime().getEndTime()))
+                filteredTerms.remove(t);
+
+            if(!weekDay.equals("") && !Time.getWeekDay(t.getTime().getStartDate()).equals(weekDay))
+                filteredTerms.remove(t);
+        }
+        return filteredTerms;
+    }
+
+    /**
+     * Filter by everything
+     * Combination of filterByRooms and filterByTimeOrAdditionalData
+     * @param name
+     * @param capacity
+     * @param equipment
+     * @param time
+     * @param additionalData
+     * @param weekDay
+     * @param termss
+     * @return filtered terms
+     */
+    public List<Term> filterByEverything(String name,int capacity, Map<String,Integer> equipment,Time time, Map<String,String> additionalData, String weekDay, List<Term> termss)
+    {
+        List<Term> filteredTerms;
+        List<Term> filteredTerms2;
+
+        filteredTerms = filterByRooms(name,capacity,equipment,termss);
+        filteredTerms2 = filterByTimeOrAdditionalData(time,additionalData,weekDay,filteredTerms);
+        return filteredTerms2;
+    }
 
     /**
      * save schedule to file
@@ -170,4 +257,29 @@ public abstract class ScheduleSpecification {
      * @param filename
      */
     public abstract void load(String filename);
+
+    private boolean mapHasEquipment(Map<String,Integer> e,Map<String,Integer> e2 )
+    {
+        for(String key : e2.keySet())
+        {
+            if(!e.containsKey(key))
+                return false;
+            else if(e.get(key) < e2.get(key))
+                return false;
+        }
+        return true;
+    }
+
+    private boolean mapHasAdditionalData(Map<String,String> e,Map<String,String> e2 )
+    {
+        for(String key : e2.keySet())
+        {
+            if(!e.containsKey(key))
+                return false;
+            else if(!e.get(key).equals(e2.get(key)))
+                return false;
+        }
+        return true;
+    }
+
 }
