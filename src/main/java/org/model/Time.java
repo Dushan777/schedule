@@ -83,4 +83,9 @@ public class Time {
                 ", endTime=" + endTime +
                 '}';
     }
+    public boolean hasNULL()
+    {
+        return startDate == null || endDate == null || startTime == null || endTime == null;
+    }
+
 }

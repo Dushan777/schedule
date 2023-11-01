@@ -22,4 +22,8 @@ public class LittleTerm {
                 ", time=" + time +
                 '}';
     }
+    public boolean hasNULL()
+    {
+        return room.getName() == null || room.getCapacity() <= 0 || time.hasNULL();
+    }
 }

@@ -35,4 +35,10 @@ public class Term {
                 ", additionalData=" + additionalData +
                 '}';
     }
+
+    public boolean hasNULL()
+    {
+        return room.getName() == null || Objects.equals(room.getName(), "") || room.getCapacity() <= 0 || time.hasNULL();
+    }
+
 }
