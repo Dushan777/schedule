@@ -10,7 +10,6 @@ import org.exceptions.TermDoesNotExistException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 @Getter
@@ -63,12 +62,16 @@ public abstract class ScheduleSpecification {
             throw new RoomAlreadyExistsException();
         else
         {
-            for(String key : equipment.keySet())
+            if(equipment != null && !equipment.isEmpty())
             {
-                if(equipment.get(key) <= 0)
-                    throw new IllegalArgumentException("Equipment quantity must be positive");
+                for(String key : equipment.keySet())
+                {
+                    if(equipment.get(key) <= 0)
+                        throw new IllegalArgumentException("Equipment quantity must be positive");
+                }
             }
             rooms.add(room);
+
         }
     }
 
@@ -235,23 +238,23 @@ public abstract class ScheduleSpecification {
             else
             {
                 if(!sortedTerms.get(sortedTerms.indexOf(t) - 1).getTime().getEndTime().equals(LocalTime.of(23,59)))
-                    freeTerms.add(new Term(t.getRoom(), new Time(date, date, sortedTerms.get(sortedTerms.indexOf(t) - 1).getTime().getEndTime(), LocalTime.of(23,59)), null));
+                    freeTerms.add(new Term(sortedTerms.get(sortedTerms.indexOf(t) - 1).getRoom(), new Time(date, date, sortedTerms.get(sortedTerms.indexOf(t) - 1).getTime().getEndTime(), LocalTime.of(23,59)), null));
                 date = date.plusDays(1);
                 while(!date.isAfter(endingDate))
                 {
-                    freeTerms.add(new Term(t.getRoom(), new Time(date, date, LocalTime.of(0,0), LocalTime.of(23,59)), null));
+                    freeTerms.add(new Term(sortedTerms.get(sortedTerms.indexOf(t) - 1).getRoom(), new Time(date, date, LocalTime.of(0,0), LocalTime.of(23,59)), null));
                     date = date.plusDays(1);
                 }
                 // dodajemo slobodne termine od pocetka rasporeda do pocetka termina
-                if(!t.getTime().getStartTime().equals(LocalTime.of(0,0)))
-                    freeTerms.add(new Term(t.getRoom(), new Time(date1, date1, LocalTime.of(0,0), t.getTime().getStartTime()), null));
-
                 LocalDate currentDate = beginningDate;
                 while(!currentDate.isEqual(date1))
                 {
                     freeTerms.add(new Term(t.getRoom(), new Time(currentDate, currentDate, LocalTime.of(0,0), LocalTime.of(23,59)), null));
                     currentDate = currentDate.plusDays(1);
                 }
+                if(!t.getTime().getStartTime().equals(LocalTime.of(0,0)))
+                    freeTerms.add(new Term(t.getRoom(), new Time(date1, date1, LocalTime.of(0,0), t.getTime().getStartTime()), null));
+
             }
         }
         // ovo je poslednji termin u rasporedu
@@ -290,17 +293,18 @@ public abstract class ScheduleSpecification {
             if(excludedDays.contains(t.getTime().getStartDate()))
                 finalTerms.remove(t);
         }
+        finalTerms.sort(new TermComparator());
         return finalTerms;
     }
 
-    /**
+    /*
      * Filter by rooms for available terms
      * if name is "" or capacity <= 0 or equipment is empty, it is not used in filtering
      * @param name
      * @param capacity
      * @param equipment
      * @return filtered terms
-     */
+
     public List<Term> filterByRoomAvailable(String name,int capacity, Map<String,Integer> equipment)
     {
         List<Term> filteredTerms = new ArrayList<>(allFreeTerms());
@@ -308,15 +312,15 @@ public abstract class ScheduleSpecification {
         {
             if(capacity > 0 && t.getRoom().getCapacity() < capacity)
                 filteredTerms.remove(t);
-            if(!name.equals("") && !t.getRoom().getName().equals(name))
+            if(name != null && !name.equals("") && !t.getRoom().getName().equals(name))
                 filteredTerms.remove(t);
-            if(!equipment.isEmpty() && !mapHasEquipment(t.getRoom().getEquipment(),equipment))
+            if(equipment != null && !equipment.isEmpty() && !mapHasEquipment(t.getRoom().getEquipment(),equipment))
                 filteredTerms.remove(t);
         }
         return filteredTerms;
-    }
+    }*/
 
-    /**
+    /*
      * Filter by rooms
      * if name is "" or capacity <= 0 or equipment is empty, it is not used in filtering
      * termss must not be null
@@ -324,28 +328,49 @@ public abstract class ScheduleSpecification {
      * @param capacity
      * @param equipment
      * @param termss
+     * @param booked if true, filter booked terms, if false, filter free terms
      * @return filtered terms
      */
 
-    public List<Term> filterByRoomsBooked(String name,int capacity, Map<String,Integer> equipment, List<Term> termss)
+    private List<Term> filterByRooms(String name,int capacity, Map<String,Integer> equipment, List<Term> termss, boolean booked)
     {
-        List<Term> filteredTerms = new ArrayList<>(termss);
-        for(Term t : termss)
+
+        List<Term> filteredTerms;
+        if(booked)
+            filteredTerms = new ArrayList<>(termss);
+        else
+            filteredTerms = new ArrayList<>(allFreeTerms());
+
+        List<Term> filteredTerms2 = new ArrayList<>(filteredTerms);
+        for(Term t : filteredTerms2)
         {
             if(capacity > 0 && t.getRoom().getCapacity() < capacity)
                     filteredTerms.remove(t);
-            if(!name.equals("") && !t.getRoom().getName().equals(name))
+            if(name != null && !name.equals("") && !t.getRoom().getName().equals(name))
                     filteredTerms.remove(t);
-            if(!equipment.isEmpty() && !mapHasEquipment(t.getRoom().getEquipment(),equipment))
+            if(equipment != null && !equipment.isEmpty() && !mapHasEquipment(t.getRoom().getEquipment(),equipment))
                     filteredTerms.remove(t);
         }
         return filteredTerms;
     }
 
+    /**
+     * Filter by rooms
+     * @param name if "" or null, it is not used in filtering
+     * @param capacity if <= 0, it is not used in filtering
+     * @param equipment if empty or null, it is not used in filtering
+     * @param booked if true, filter booked terms, if false, filter free terms
+     * @return filtered terms
+     */
+    public List<Term> filterByRooms(String name,int capacity, Map<String,Integer> equipment, boolean booked)
+    {
+        return filterByRooms(name,capacity,equipment,terms,booked);
+    }
+
     // kod opcije za samo jedan dan necemo imati endDate i weekDay provere, ali mislim da ne treba jos jedna metoda
     // jer je ovo dovoljno opsta, ali ovo je u slucaju da on ima obe opcije u obe implementacije sto je nama logicno
 
-    /**
+    /*
      * Filter by time or additional data
      * if any part of time is null, it is not used in filtering
      * if additionalData is empty, it is not used in filtering
@@ -358,34 +383,86 @@ public abstract class ScheduleSpecification {
      * @param termss
      * @return filtered terms
      */
-    public List<Term> filterByTimeOrAdditionalDataBooked(Time time, Map<String,String> additionalData, String weekDay, List<Term> termss)
+    private List<Term> filterByTimeOrAdditionalData(Time time, Map<String,String> additionalData, String weekDay, List<Term> termss, boolean booked)
     {
-        List<Term> filteredTerms = new ArrayList<>(termss);
-        for(Term t : termss)
+        List<Term> filteredTerms;
+        if(booked)
+             filteredTerms = new ArrayList<>(termss);
+        else
         {
-            if(!additionalData.isEmpty() && !mapHasAdditionalData(t.getAdditionalData(),additionalData))
-                filteredTerms.remove(t);
-
-            // ako prosledjeni pocinje nakon pocetka termina
+            if(terms.equals(termss))
+                filteredTerms = new ArrayList<>(allFreeTerms());
+            else
+                filteredTerms = new ArrayList<>(termss);
+        }
+        List<Term> temp = new ArrayList<>(filteredTerms);
+        for(Term t : temp)
+        {
             if(time.getStartDate()!=null && time.getStartDate().isAfter(t.getTime().getStartDate()))
                 filteredTerms.remove(t);
             // ako se prosledjeni zavrsava pre kraja termina
             if(time.getEndDate()!=null && time.getEndDate().isBefore(t.getTime().getEndDate()))
                 filteredTerms.remove(t);
-
-            if(time.getStartTime()!=null && time.getStartTime().isAfter(t.getTime().getStartTime()))
+            if(weekDay != null && !weekDay.equals("") && !Time.getWeekDay(t.getTime().getStartDate()).equals(weekDay))
                 filteredTerms.remove(t);
 
-            if(time.getEndTime()!=null && time.getEndTime().isBefore(t.getTime().getEndTime()))
-                filteredTerms.remove(t);
+            if(booked) {
+                if (additionalData != null && !additionalData.isEmpty() && !mapHasAdditionalData(t.getAdditionalData(), additionalData))
+                    filteredTerms.remove(t);
 
-            if(!weekDay.equals("") && !Time.getWeekDay(t.getTime().getStartDate()).equals(weekDay))
-                filteredTerms.remove(t);
+                // ako prosledjeni pocinje nakon pocetka termina
+
+                if (time.getStartTime() != null && time.getStartTime().isAfter(t.getTime().getStartTime()))
+                    filteredTerms.remove(t);
+
+                if (time.getEndTime() != null && time.getEndTime().isBefore(t.getTime().getEndTime()))
+                    filteredTerms.remove(t);
+            }
+            else
+            {
+                /*
+                11-12
+                11-null time
+                null-12
+                00-08 t
+                18-19 t
+                Raf 1 10-12 1.1.2020 1.1.2020
+                Raf 1 00-23:59 2.1.2020 2.1.2020
+                 */
+
+                                                    // prosledjen pocetak je pre pocetka termina            // prosledjen pocetak je posle kraja termina
+                // logika : ako mi treba da zakazem cas koji ce poceti u 14h najkasnije
+                // 14 - null
+                if (time.getEndTime() == null && time.getStartTime() != null && (time.getStartTime().isBefore(t.getTime().getStartTime()) || time.getStartTime().isAfter(t.getTime().getEndTime())))
+                    filteredTerms.remove(t);
+                                                    // prosledjen kraj je posle kraja termina               // prosledjen kraj je pre pocetka termina
+                // logika : ako mi treba da zakazem cas koji ce se zavrsiti u 14h najranije
+                // null - 14
+                if (time.getStartTime() == null && time.getEndTime() != null && (time.getEndTime().isAfter(t.getTime().getEndTime()) || time.getEndTime().isBefore(t.getTime().getStartTime())))
+                    filteredTerms.remove(t);
+                // logika : vracam termine koji su slobodni u intervalu koji obuhvata 14-16
+                // 14 - 16
+                if(time.getStartTime() != null && time.getEndTime() != null && (time.getStartTime().isBefore(t.getTime().getStartTime()) || time.getEndTime().isAfter(t.getTime().getEndTime())))
+                    filteredTerms.remove(t);
+            }
         }
         return filteredTerms;
     }
 
     /**
+     * Filter by time or additional data
+     * @param time
+     * @param additionalData
+     * @param weekDay
+     * @param booked if true, filter booked terms, if false, filter free terms
+     * @return filtered terms
+     */
+    public List<Term> filterByTimeOrAdditionalData(Time time, Map<String,String> additionalData, String weekDay, boolean booked)
+    {
+        return filterByTimeOrAdditionalData(time,additionalData,weekDay,terms,booked);
+    }
+
+    /*
      * Filter by everything
      * Combination of filterByRooms and filterByTimeOrAdditionalData
      * @param name
@@ -397,16 +474,33 @@ public abstract class ScheduleSpecification {
      * @param termss
      * @return filtered terms
      */
-    public List<Term> filterByEverythingBooked(String name,int capacity, Map<String,Integer> equipment,Time time, Map<String,String> additionalData, String weekDay, List<Term> termss)
+    private List<Term> filterByEverything(String name,int capacity, Map<String,Integer> equipment,Time time, Map<String,String> additionalData, String weekDay, List<Term> termss, boolean booked)
     {
         List<Term> filteredTerms;
         List<Term> filteredTerms2;
 
-        filteredTerms = filterByRoomsBooked(name,capacity,equipment,termss);
-        filteredTerms2 = filterByTimeOrAdditionalDataBooked(time,additionalData,weekDay,filteredTerms);
+        // TODO: booked umesto true
+        filteredTerms = filterByRooms(name,capacity,equipment,booked);
+        filteredTerms2 = filterByTimeOrAdditionalData(time,additionalData,weekDay,filteredTerms, booked);
         return filteredTerms2;
     }
 
+    /**
+     * Filter by everything
+     * Combination of filterByRooms and filterByTimeOrAdditionalData
+     * @param name
+     * @param capacity
+     * @param equipment
+     * @param time
+     * @param additionalData
+     * @param weekDay
+     * @param booked
+     * @return filtered terms
+     */
+    public List<Term> filterByEverything(String name,int capacity, Map<String,Integer> equipment,Time time, Map<String,String> additionalData, String weekDay, boolean booked)
+    {
+        return filterByEverything(name,capacity,equipment,time,additionalData,weekDay,terms,booked);
+    }
     /**
      * save schedule to file
      * can be PDF, CSV, JSON
