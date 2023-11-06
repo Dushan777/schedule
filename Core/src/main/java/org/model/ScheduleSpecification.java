@@ -7,6 +7,7 @@ import org.exceptions.RoomAlreadyExistsException;
 import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -501,22 +502,46 @@ public abstract class ScheduleSpecification {
     {
         return filterByEverything(name,capacity,equipment,time,additionalData,weekDay,terms,booked);
     }
+
     /**
-     * save schedule to file
-     * can be PDF, CSV, JSON
+     * save schedule to file as JSON
      * @param filepath
      * @param fileName
+     * @throws IOException
      */
-    public abstract void save(String filepath, String fileName);
+    public abstract void saveAsJSON(String filepath, String fileName) throws IOException;
 
     /**
-     * load schedule from file
-     * can be CSV, JSON
-     * @param filename
+     * save schedule to file as CSV
+     * @param filepath
+     * @param fileName
+     * @throws IOException
      */
-    public abstract void load(String filename);
+    public abstract void saveAsCSV(String filepath, String fileName) throws IOException;
 
-    private boolean mapHasEquipment(Map<String,Integer> e,Map<String,Integer> e2 )
+    /**
+     * save schedule to file as PDF
+     * @param filepath
+     * @param fileName
+     * @throws IOException
+     */
+    public abstract void saveAsPDF(String filepath, String fileName) throws IOException;
+
+    /**
+     * load schedule from JSON file
+     * @param filename
+     * @throws IOException
+     */
+    public abstract void loadFromJSON(String filename) throws IOException;
+
+    /**
+     * load schedule from CSV file
+     * @param filename
+     * @throws IOException
+     */
+    public abstract void loadFromCSV(String filename) throws IOException;
+
+    private boolean mapHasEquipment(Map<String,Integer> e,Map<String,Integer> e2)
     {
         for(String key : e2.keySet())
         {
