@@ -1,0 +1,12 @@
+FormatDatuma:MM/dd/yyyy
+DatumVazenja:10/02/2023,01/13/2024
+NeradniDani:12/31/2023,01/01/2024,01/07/2024
+Prostorije:
+RAF1,30,Racunar-30,Tabla-1
+RAF2,20,Racunar-15,Projektor-1
+RAF3,15
+RAF4,24,Projektor-2
+RAF5,10,Tabla-1
+RAF6,20,Racunar-10,Tabla-1,Projektor-1
+RAF7,20,Tabla-2,Projektor-1
+

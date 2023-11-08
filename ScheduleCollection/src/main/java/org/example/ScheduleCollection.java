@@ -32,18 +32,16 @@ public class ScheduleCollection extends ScheduleSpecification {
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private Term termToRevert;
-    @Override
-    public void initialize(LocalDate date, LocalDate date1, List<LocalDate> list) {
-        setExcludedDays(list);
-        setBeginningDate(date);
-        setEndingDate(date1);
-    }
+
     // TESTIRANO
     @Override
     public void addTerm(Term term, String weekDay) throws TermAlreadyExistsException, DifferentDateException, IllegalArgumentException {
         if(term.hasNULL())
             throw new IllegalArgumentException("Invalid term!");
         if(!getRooms().contains(term.getRoom()))
+            throw new IllegalArgumentException("Invalid room!");
+        Room room = getRooms().get(getRooms().indexOf(term.getRoom()));
+        if(room.getCapacity() != term.getRoom().getCapacity())
             throw new IllegalArgumentException("Invalid room!");
         if(!term.getTime().getStartDate().equals(term.getTime().getEndDate())) {
             if(change && revert)
@@ -143,24 +141,6 @@ public class ScheduleCollection extends ScheduleSpecification {
         }
 
     }
-    private static List<ConfigMapping> readConfig(String filePath) throws FileNotFoundException {
-        List<ConfigMapping> mappings = new ArrayList<>();
-
-        File file = new File(filePath);
-        Scanner scanner = new Scanner(file);
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] splitLine = line.split(" ", 3);
-
-            mappings.add(new ConfigMapping(Integer.valueOf(splitLine[0]), splitLine[1], splitLine[2]));
-        }
-
-        scanner.close();
-
-
-        return mappings;
-    }
     @Override
     public void saveAsCSV(List<Term> terms,String filePath) throws IOException {
 
@@ -254,12 +234,12 @@ public class ScheduleCollection extends ScheduleSpecification {
 
 
 
-    private boolean termsOverlap(Term t, Term term) {
+    /*private boolean termsOverlap(Term t, Term term) {
         if(!t.getTime().getStartDate().equals(term.getTime().getStartDate()))
             return false;
         if (t.getRoom().equals(term.getRoom()))
             return !((t.getTime().getEndTime().isBefore(term.getTime().getStartTime()) || t.getTime().getStartTime().isAfter(term.getTime().getEndTime())
             || t.getTime().getEndTime().equals(term.getTime().getStartTime()) || t.getTime().getStartTime().equals(term.getTime().getEndTime())));
         return false;
-    }
+    }*/
 }

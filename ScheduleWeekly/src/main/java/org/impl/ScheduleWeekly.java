@@ -27,12 +27,7 @@ public class ScheduleWeekly extends ScheduleSpecification {
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private List<Term> revertedTerms = new ArrayList<>();
-    @Override
-    public void initialize(LocalDate date, LocalDate date1, List<LocalDate> list) {
-        setExcludedDays(list);
-        setBeginningDate(date);
-        setEndingDate(date1);
-    }
+
 
     // TESTIRANO
     @Override
@@ -40,6 +35,9 @@ public class ScheduleWeekly extends ScheduleSpecification {
         if(term.hasNULL())
             throw new IllegalArgumentException("Invalid term!");
         if(!getRooms().contains(term.getRoom()))
+            throw new IllegalArgumentException("Invalid room!");
+        Room room = getRooms().get(getRooms().indexOf(term.getRoom()));
+        if(room.getCapacity() != term.getRoom().getCapacity())
             throw new IllegalArgumentException("Invalid room!");
         if(weekDay == null || weekDay.equals(""))
             throw new IllegalArgumentException("Invalid week day!");
@@ -161,7 +159,7 @@ public class ScheduleWeekly extends ScheduleSpecification {
             change = false;
             revert = false;
         }
-        else        //TODO: promeniti ime exceptiona
+        else
             throw new IllegalArgumentException("Invalid date!");
     }
 
@@ -218,24 +216,6 @@ public class ScheduleWeekly extends ScheduleSpecification {
     @Override
     public void loadFromJSON(String fileName) throws IOException {
 
-    }
-    private static List<ConfigMapping> readConfig(String filePath) throws FileNotFoundException {
-        List<ConfigMapping> mappings = new ArrayList<>();
-
-        File file = new File(filePath);
-        Scanner scanner = new Scanner(file);
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] splitLine = line.split(" ", 3);
-
-            mappings.add(new ConfigMapping(Integer.valueOf(splitLine[0]), splitLine[1], splitLine[2]));
-        }
-
-        scanner.close();
-
-
-        return mappings;
     }
     @Override
     public void loadFromCSV(String fileName, String configPath) throws IOException, TermAlreadyExistsException {
@@ -307,12 +287,12 @@ public class ScheduleWeekly extends ScheduleSpecification {
 
 
 
-    private boolean termsOverlap(Term t, Term term) {
+    /*private boolean termsOverlap(Term t, Term term) {
         if(!t.getTime().getStartDate().equals(term.getTime().getStartDate()))
             return false;
         if (t.getRoom().equals(term.getRoom()))
             return !((t.getTime().getEndTime().isBefore(term.getTime().getStartTime()) || t.getTime().getStartTime().isAfter(term.getTime().getEndTime())
                     || t.getTime().getEndTime().equals(term.getTime().getStartTime()) || t.getTime().getStartTime().equals(term.getTime().getEndTime())));
         return false;
-    }
+    }*/
 }

@@ -7,12 +7,12 @@ import org.exceptions.RoomAlreadyExistsException;
 import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 @Getter
 @Setter
 public abstract class ScheduleSpecification {
@@ -23,6 +23,7 @@ public abstract class ScheduleSpecification {
     private List<Term> terms = new ArrayList<>();
 
     private List<Room> rooms = new ArrayList<>();
+
 
     /*
     - inicijalizacija rasporeda
@@ -35,19 +36,66 @@ public abstract class ScheduleSpecification {
     // TODO: uskladiti exceptione izmedju specifikacija i implementacija
     /**
      * initialize schedule
-     * MUST be called before any other method
-     * MUST have startDate and endDate
-     * @param startDate
-     * @param endDate
-     * @param excludedDays
+     * sets beginningDate, endingDate and excludedDays
+     * adds rooms
+     * @param filePath path of a file from which schedule is initialized
      */
-    public abstract void initialize(LocalDate startDate, LocalDate endDate, List<LocalDate> excludedDays);
-    /*{
-        setExcludedDays(excludedDays);
-        setBeginningDate(startDate);
-        setEndingDate(endDate);
+    public void initialize(String filePath) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        String line;
+        /*
+        DatumVazenja:10/02/2023,01/13/2024
+        NeradniDani:11/15/2023,12/31/2023,01/01/2024,01/07/2024
+        Ucionice:
+        RAF1,30,Racunar-10,Tabla-1
+        RAF2,20,Racunar-15,Projektor-1
+        RAF3,15
+        RAF4,24,Projektor-2
+        RAF5,10,Tabla-1
+         */
+        while ((line = reader.readLine()) != null) {
+            String dateFormat = "MM/dd/yyyy";
+            if(line.startsWith("FormatDatuma:"))
+                dateFormat = line.substring(13);
+            else if (line.startsWith("DatumVazenja:")) {
+                String[] dates = line.substring(13).split(",");
+                beginningDate = LocalDate.parse(dates[0], DateTimeFormatter.ofPattern(dateFormat));
+                endingDate = LocalDate.parse(dates[1], DateTimeFormatter.ofPattern(dateFormat));
+            }
+            else if (line.startsWith("NeradniDani:")) {
+                String[] dates = line.substring(12).split(",");
+                for (String date : dates) {
+                    excludedDays.add(LocalDate.parse(date, DateTimeFormatter.ofPattern(dateFormat)));
+                }
+            }
+            else if (line.startsWith("Prostorije:")) {
+                while ((line = reader.readLine()) != null) {
+                    if(line.equals(""))
+                        continue;
+                    String[] roomData = line.split(",");
+                    String name = roomData[0];
+                    int capacity = Integer.parseInt(roomData[1]);
+                    Map<String, Integer> equipment = null;
+                    if (roomData.length > 2) {
+                        equipment = new HashMap<>();
+                        for (int i = 2; i < roomData.length; i++) {
+                            String[] equipmentData = roomData[i].split("-");
+                            equipment.put(equipmentData[0], Integer.parseInt(equipmentData[1]));
+                        }
+                    }
+                    try {
+                        addRoom(name, capacity, equipment);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                }
+            }
+
+        }
+        rooms.forEach(System.out::println);
     }
-    */
+
 
     /**
      * add room to schedule with equipment
@@ -566,6 +614,32 @@ public abstract class ScheduleSpecification {
                 return false;
         }
         return true;
+    }
+    protected boolean termsOverlap(Term t, Term term) {
+        if(!t.getTime().getStartDate().equals(term.getTime().getStartDate()))
+            return false;
+        if (t.getRoom().equals(term.getRoom()))
+            return !((t.getTime().getEndTime().isBefore(term.getTime().getStartTime()) || t.getTime().getStartTime().isAfter(term.getTime().getEndTime())
+                    || t.getTime().getEndTime().equals(term.getTime().getStartTime()) || t.getTime().getStartTime().equals(term.getTime().getEndTime())));
+        return false;
+    }
+    protected static List<ConfigMapping> readConfig(String filePath) throws FileNotFoundException {
+        List<ConfigMapping> mappings = new ArrayList<>();
+
+        File file = new File(filePath);
+        Scanner scanner = new Scanner(file);
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] splitLine = line.split(" ", 3);
+
+            mappings.add(new ConfigMapping(Integer.valueOf(splitLine[0]), splitLine[1], splitLine[2]));
+        }
+
+        scanner.close();
+
+
+        return mappings;
     }
 
 }
