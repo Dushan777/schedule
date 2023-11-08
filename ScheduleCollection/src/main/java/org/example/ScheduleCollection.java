@@ -1,18 +1,25 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.exceptions.DifferentDateException;
 import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
-import org.model.LittleTerm;
-import org.model.ScheduleSpecification;
-import org.model.Term;
+import org.model.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class ScheduleCollection extends ScheduleSpecification {
 
@@ -33,9 +40,11 @@ public class ScheduleCollection extends ScheduleSpecification {
     }
     // TESTIRANO
     @Override
-    public void addTerm(Term term, String weekDay) throws TermAlreadyExistsException, DifferentDateException {
+    public void addTerm(Term term, String weekDay) throws TermAlreadyExistsException, DifferentDateException, IllegalArgumentException {
         if(term.hasNULL())
             throw new IllegalArgumentException("Invalid term!");
+        if(!getRooms().contains(term.getRoom()))
+            throw new IllegalArgumentException("Invalid room!");
         if(!term.getTime().getStartDate().equals(term.getTime().getEndDate())) {
             if(change && revert)
             {
@@ -63,9 +72,9 @@ public class ScheduleCollection extends ScheduleSpecification {
     public boolean termAvailable(Term term, String weekDay) {
         if(term.hasNULL())
             return false;
-        if(getExcludedDays().contains(term.getTime().getStartDate()))
+        if(getExcludedDays() != null && getExcludedDays().contains(term.getTime().getStartDate()))
             return false;
-        if(term.getTime().getStartDate().isBefore(getBeginningDate()) || term.getTime().getStartDate().isAfter(getEndingDate()))
+        if(getBeginningDate() != null  && term.getTime().getStartDate().isBefore(getBeginningDate()) && getEndingDate() != null && term.getTime().getStartDate().isAfter(getEndingDate()))
             return false;
         if(!term.getTime().getStartDate().equals(term.getTime().getEndDate()))
             return false;
@@ -123,28 +132,124 @@ public class ScheduleCollection extends ScheduleSpecification {
     }
 
     @Override
-    public void saveAsJSON(String filepath, String fileName) throws IOException {
+    public void saveAsJSON(List<Term> terms, String fileName) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (PrintWriter writer = new PrintWriter(fileName + ".json")) {
+            writer.println(gson.toJson(terms));
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e);
+        }
+
+    }
+    private static List<ConfigMapping> readConfig(String filePath) throws FileNotFoundException {
+        List<ConfigMapping> mappings = new ArrayList<>();
+
+        File file = new File(filePath);
+        Scanner scanner = new Scanner(file);
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] splitLine = line.split(" ", 3);
+
+            mappings.add(new ConfigMapping(Integer.valueOf(splitLine[0]), splitLine[1], splitLine[2]));
+        }
+
+        scanner.close();
+
+
+        return mappings;
+    }
+    @Override
+    public void saveAsCSV(List<Term> terms,String filePath) throws IOException {
+
+        FileWriter fileWriter = new FileWriter(filePath);
+        CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT);
+
+        for (Term term : terms) {
+            csvPrinter.printRecord(
+                    term.getRoom().getName(),
+                    term.getRoom().getCapacity(),
+                    term.getTime().getStartDate(),
+                    term.getTime().getStartTime(),
+                    term.getTime().getEndTime(),
+                    term.getAdditionalData(),
+                    term.getRoom().getEquipment()
+            );
+        }
+
+        csvPrinter.close();
+        fileWriter.close();
+    }
+
+    @Override
+    public void saveAsPDF(List<Term> terms,String filePath) throws IOException {
 
     }
 
     @Override
-    public void saveAsCSV(String filepath, String fileName) throws IOException {
+    public void loadFromJSON(String fileName) throws IOException {
 
     }
 
     @Override
-    public void saveAsPDF(String filepath, String fileName) throws IOException {
+    public void loadFromCSV(String fileName, String configPath) throws IOException, DifferentDateException, TermAlreadyExistsException {
+        List<ConfigMapping> columnMappings = readConfig(configPath);
+        Map<Integer, String> mappings = new HashMap<>();
+        for(ConfigMapping configMapping : columnMappings) {
+            mappings.put(configMapping.getIndex(), configMapping.getOriginal());
+        }
+        FileReader fileReader = new FileReader(fileName);
+        CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(fileReader);
 
-    }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mappings.get(-1));
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern(mappings.get(-2));
+        for (CSVRecord record : parser) {
+            Term term = new Term();
 
-    @Override
-    public void loadFromJSON(String filename) throws IOException {
+            for (ConfigMapping entry : columnMappings) {
+                int columnIndex = entry.getIndex();
 
-    }
+                if(columnIndex == -1) continue;
 
-    @Override
-    public void loadFromCSV(String filename) throws IOException {
+                String columnName = entry.getCustom();
 
+                switch (mappings.get(columnIndex)) {
+                    case "name":
+                        term.setRoom(new Room(record.get(columnIndex), 0, null));
+                        break;
+                    case "capacity":
+                        term.getRoom().setCapacity(Integer.parseInt(record.get(columnIndex)));
+                        break;
+                    case "equipment":
+                        term.getRoom().getEquipment().put(columnName, Integer.valueOf(record.get(columnIndex)));
+                        break;
+
+                    case "start":
+                        LocalDate startDate = LocalDate.parse(record.get(columnIndex), formatter);
+                        term.setTime(new Time(startDate, startDate, null, null));
+                        break;
+                    /*case "end":
+                        LocalDate endDate = LocalDate.parse(record.get(columnIndex), formatter);
+                        term.getTime().setEndDate(endDate);
+                        break;*/
+                    case "startTime":
+                        LocalTime startTime = LocalTime.parse(record.get(columnIndex), formatter2);
+                        term.getTime().setStartTime(startTime);
+                        break;
+                    case "endTime":
+                        LocalTime endTime = LocalTime.parse(record.get(columnIndex), formatter2);
+                        term.getTime().setEndTime(endTime);
+                        break;
+                    case "additionalData":
+                        term.getAdditionalData().put(columnName, record.get(columnIndex));
+                        break;
+                }
+            }
+
+            addTerm(term, Time.getWeekDay(term.getTime().getStartDate()));
+        }
     }
 
 

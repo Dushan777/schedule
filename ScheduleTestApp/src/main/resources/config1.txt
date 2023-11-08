@@ -1,0 +1,13 @@
+-1 Datum MM/dd/yyyy
+-2 Vreme HH:mm
+-3 DanUnedelji Monday/Tuesday/Wednesday/Thursday/Friday/Saturday/Sunday
+2 Pocetak start
+0 ImeUcionice name
+1 Kapacitet capacity
+8 Racunar equipment
+7 Profesor additionalData
+6 Predmet additionalData
+3 PocetakCasa startTime
+4 KrajCasa endTime
+5 Kraj end
+9 DanUNedelji weekDay

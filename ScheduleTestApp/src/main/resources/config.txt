@@ -1,0 +1,10 @@
+-1 Datum MM/dd/yyyy
+-2 Vreme HH:mm
+2 Pocetak start
+0 ImeUcionice name
+1 Kapacitet capacity
+7 Racunar equipment
+6 Profesor additionalData
+5 Predmet additionalData
+3 PocetakCasa startTime
+4 KrajCasa endTime

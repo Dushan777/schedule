@@ -18,6 +18,11 @@ public class Term {
         this.time = time;
         this.additionalData = (additionalData != null) ? additionalData : new HashMap<>();
     }
+    public Term()
+    {
+        additionalData = new HashMap<>();
+    }
+
 
     @Override
     public boolean equals(Object obj) {

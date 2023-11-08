@@ -291,7 +291,9 @@ public abstract class ScheduleSpecification {
         List<Term> finalTerms = new ArrayList<>(freeTerms);
         for(Term t : freeTerms)
         {
-            if(excludedDays.contains(t.getTime().getStartDate()))
+            if(getExcludedDays() == null)
+                break;
+            if(getExcludedDays().contains(t.getTime().getStartDate()))
                 finalTerms.remove(t);
         }
         finalTerms.sort(new TermComparator());
@@ -505,41 +507,42 @@ public abstract class ScheduleSpecification {
 
     /**
      * save schedule to file as JSON
-     * @param filepath
+     * @param terms
      * @param fileName
      * @throws IOException
      */
-    public abstract void saveAsJSON(String filepath, String fileName) throws IOException;
+    public abstract void saveAsJSON(List<Term> terms, String fileName) throws IOException;
 
     /**
      * save schedule to file as CSV
-     * @param filepath
-     * @param fileName
+     * @param terms
+     * @param filePath
      * @throws IOException
      */
-    public abstract void saveAsCSV(String filepath, String fileName) throws IOException;
+    public abstract void saveAsCSV(List<Term> terms,String filePath) throws IOException;
 
     /**
      * save schedule to file as PDF
-     * @param filepath
-     * @param fileName
+     * @param terms
+     * @param filePath
      * @throws IOException
      */
-    public abstract void saveAsPDF(String filepath, String fileName) throws IOException;
+    public abstract void saveAsPDF(List<Term> terms,String filePath) throws IOException;
 
     /**
      * load schedule from JSON file
-     * @param filename
-     * @throws IOException
+     * @param fileName
+     * @throws IOException, TermAlreadyExistsException, DifferentDateException
      */
-    public abstract void loadFromJSON(String filename) throws IOException;
+    public abstract void loadFromJSON(String fileName) throws IOException, TermAlreadyExistsException, DifferentDateException;
 
     /**
      * load schedule from CSV file
-     * @param filename
-     * @throws IOException
+     * @param fileName
+     * @param configPath
+     * @throws IOException, DifferentDateException, TermAlreadyExistsException
      */
-    public abstract void loadFromCSV(String filename) throws IOException;
+    public abstract void loadFromCSV(String fileName, String configPath) throws IOException, DifferentDateException, TermAlreadyExistsException;
 
     private boolean mapHasEquipment(Map<String,Integer> e,Map<String,Integer> e2)
     {
