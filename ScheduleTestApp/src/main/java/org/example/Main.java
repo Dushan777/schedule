@@ -16,7 +16,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ScheduleSpecification schedule = new ScheduleCollection();
+        ScheduleSpecification schedule = new ScheduleWeekly();
         LocalTime sad = LocalTime.of(12, 0);
         List<Term> termini = schedule.getTerms();
         Scanner scanner = new Scanner(System.in);
@@ -50,7 +50,7 @@ public class Main {
             System.out.println("12. Load from JSON");
             System.out.println("13. Save to CSV");//   exportCSV
             System.out.println("14. Save to JSON");
-            System.out.println("15. Save to PDF");
+            System.out.println("15. Save to PDF");//   exportPDF
             System.out.println("0. Exit");//
             scanner = new Scanner(System.in);
             int option = Integer.parseInt(scanner.nextLine());
@@ -86,6 +86,7 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("Add term");
+                    termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -128,6 +129,7 @@ public class Main {
                     break;
                 case 3:
                     System.out.println("Delete term");
+                    termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -170,11 +172,13 @@ public class Main {
                     break;
                 case 6:
                     System.out.println("All free terms");
-                    schedule.allFreeTerms().forEach(System.out::println);
+                    termini = schedule.allFreeTerms();
+                    termini.forEach(System.out::println);
                     break;
                 case 7:
                     System.out.println("All booked terms");
-                    schedule.getTerms().forEach(System.out::println);
+                    termini = schedule.getTerms();
+                    termini.forEach(System.out::println);
                     break;
                 case 8:
                     System.out.println("Filter by room. Enter true/false(true - filter booked term, false - filter available terms),room name, capacity and equipment in format:\nname,capacity,equipment1,quantity1,equipment2,quantity2...\nIf you don't want to filter by something, enter \"null\" as it's value or 0 if it is capacity");
@@ -254,6 +258,7 @@ public class Main {
                     break;
                 case 15:
                     System.out.println("Save to PDF");
+                    //TODO: dodati nove stranice na npr. 20 termina
                     try {
                         scanner = new Scanner(System.in);
                         System.out.println("Unesite ime fajla");

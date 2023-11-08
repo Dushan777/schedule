@@ -185,7 +185,6 @@ public class ScheduleCollection extends ScheduleSpecification {
             contentStream.setFont(PDType1Font.HELVETICA, 12);
             contentStream.newLineAtOffset(0, -20);
             //contentStream.beginText();
-            String termsHeaders = "ImeUcionice,Kapacitet,Pocetak,PocetakCasa,KrajCasa,Dodatno";
             for (Term term : terms) {
                 String termData = term.getRoom().getName()+","+term.getRoom().getCapacity()+","+term.getTime().getStartDate()+","+term.getTime().getStartTime()+","+term.getTime().getEndTime()+","+term.getAdditionalData();
                 contentStream.showText(termData);

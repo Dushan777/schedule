@@ -7,6 +7,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.exceptions.TermAlreadyExistsException;
 import org.model.*;
 
@@ -212,7 +217,41 @@ public class ScheduleWeekly extends ScheduleSpecification {
 
     @Override
     public void saveAsPDF(List<Term> terms,String filePath) throws IOException {
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
 
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        // Export Student Information
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        contentStream.beginText();
+        contentStream.newLineAtOffset(50, 600);
+        contentStream.showText("Schedule information");
+        contentStream.setFont(PDType1Font.HELVETICA, 12);
+        contentStream.newLineAtOffset(0, -20);
+        //contentStream.beginText();
+        List<Term> curr = new ArrayList<>();
+        for (Term term : terms) {
+            int count = 0;
+            if(curr.contains(term))
+                continue;
+            for(Term t : terms)
+            {
+                if(t.equals(new Term(term.getRoom(), new Time(term.getTime().getStartDate().plusWeeks(count+1), term.getTime().getEndDate().plusWeeks(count+1), term.getTime().getStartTime(), term.getTime().getEndTime()), term.getAdditionalData())))
+                {
+                    count++;
+                    if(!curr.contains(t))
+                        curr.add(t);
+                }
+            }
+            String termData = term.getRoom().getName()+", "+term.getRoom().getCapacity()+", "+term.getTime().getStartDate()+","+term.getTime().getStartTime()+", "+term.getTime().getEndTime()+", "+term.getTime().getEndDate().plusWeeks(count) +", "+term.getAdditionalData() + ", " + Time.getWeekDay(term.getTime().getStartDate());
+            contentStream.showText(termData);
+            contentStream.newLineAtOffset(0, -15);
+        }
+        contentStream.endText();
+        contentStream.close();
+        document.save(filePath);
+        document.close();
     }
 
     @Override
