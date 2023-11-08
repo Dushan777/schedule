@@ -78,7 +78,9 @@ public class ScheduleWeekly extends ScheduleSpecification {
             return false;
         if(!weekDay.equals("Monday") && !weekDay.equals("Tuesday") && !weekDay.equals("Wednesday") && !weekDay.equals("Thursday") && !weekDay.equals("Friday") && !weekDay.equals("Saturday") && !weekDay.equals("Sunday"))
             return false;
-        if(getBeginningDate() != null  && term.getTime().getStartDate().isBefore(getBeginningDate()) && getEndingDate() != null && term.getTime().getStartDate().isAfter(getEndingDate()))
+        if(getBeginningDate() != null  && getEndingDate() != null
+                && ((term.getTime().getStartDate().isBefore(getBeginningDate()) || term.getTime().getEndDate().isAfter(getEndingDate()))
+                || (term.getTime().getEndDate().isBefore(getBeginningDate()) || term.getTime().getStartDate().isAfter(getEndingDate()))))
             return false;
         /*if(term.getTime().getStartDate().isAfter(getEndingDate()) || term.getTime().getEndDate().isBefore(getBeginningDate()))
             return false;*/

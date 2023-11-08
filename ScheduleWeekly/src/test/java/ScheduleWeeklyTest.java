@@ -1,3 +1,4 @@
+import org.exceptions.RoomAlreadyExistsException;
 import org.exceptions.TermAlreadyExistsException;
 import org.impl.ScheduleWeekly;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ScheduleWeeklyTest {
 
     @Test
-    public void termAvailableTest() {
+    public void termAvailableTest() throws RoomAlreadyExistsException {
         LocalTime sad = LocalTime.parse("12:00", DateTimeFormatter.ofPattern("HH:mm"));
         String dateStr = "2023-10-28";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // ovo je samo da vidimo da l radi kad se stavi datum kao string
@@ -23,6 +24,7 @@ public class ScheduleWeeklyTest {
         System.out.println("da");
         ScheduleWeekly scheduleWeekly = new ScheduleWeekly();
         scheduleWeekly.getExcludedDays().add(localDate);
+        scheduleWeekly.addRoom("Raf1", 30, null);
         scheduleWeekly.setBeginningDate(LocalDate.now().minusWeeks(5));
         scheduleWeekly.setEndingDate(LocalDate.now().plusWeeks(4));
         scheduleWeekly.getTerms().add(new Term(new Room("Raf1", 30, null), new Time(LocalDate.now().minusWeeks(2), LocalDate.now().minusWeeks(2), sad.minusHours(4), 120), null));
@@ -46,7 +48,7 @@ public class ScheduleWeeklyTest {
 
     }
     @Test
-    public void addTermTest() throws TermAlreadyExistsException {
+    public void addTermTest() throws TermAlreadyExistsException, RoomAlreadyExistsException {
         LocalTime sad = LocalTime.parse("12:00", DateTimeFormatter.ofPattern("HH:mm"));
         String dateStr = "2023-10-28";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // ovo je samo da vidimo da l radi kad se stavi datum kao string
@@ -54,6 +56,7 @@ public class ScheduleWeeklyTest {
         System.out.println("da");
         ScheduleWeekly scheduleWeekly = new ScheduleWeekly();
         scheduleWeekly.getExcludedDays().add(localDate);
+        scheduleWeekly.addRoom("Raf1", 30, null);
         scheduleWeekly.setBeginningDate(LocalDate.now().minusWeeks(5));
         scheduleWeekly.setEndingDate(LocalDate.now().plusWeeks(4));
         scheduleWeekly.getTerms().add(new Term(new Room("Raf1", 30, null), new Time(LocalDate.now().minusWeeks(2), LocalDate.now().minusWeeks(2), sad.minusHours(4), 120), null));
@@ -111,7 +114,7 @@ public class ScheduleWeeklyTest {
     }
 
     @Test
-    public void changeTermTest() throws TermAlreadyExistsException {
+    public void changeTermTest() throws TermAlreadyExistsException, RoomAlreadyExistsException {
         LocalTime sad = LocalTime.parse("12:00", DateTimeFormatter.ofPattern("HH:mm"));
         String dateStr = "2023-10-28";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // ovo je samo da vidimo da l radi kad se stavi datum kao string
@@ -119,6 +122,9 @@ public class ScheduleWeeklyTest {
         System.out.println("da");
         ScheduleWeekly scheduleWeekly = new ScheduleWeekly();
         scheduleWeekly.getExcludedDays().add(localDate);
+        scheduleWeekly.addRoom("Raf1", 30, null);
+        scheduleWeekly.addRoom("Raf2", 30, null);
+        scheduleWeekly.addRoom("Raf4", 30, null);
         scheduleWeekly.setBeginningDate(LocalDate.now().minusWeeks(5));
         scheduleWeekly.setEndingDate(LocalDate.now().plusWeeks(4));
         scheduleWeekly.getTerms().add(new Term(new Room("Raf1", 30, null), new Time(LocalDate.now().minusWeeks(2), LocalDate.now().minusWeeks(2), sad.minusHours(4), 120), null));

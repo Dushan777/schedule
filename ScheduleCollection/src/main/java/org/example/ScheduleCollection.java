@@ -72,7 +72,9 @@ public class ScheduleCollection extends ScheduleSpecification {
             return false;
         if(getExcludedDays() != null && getExcludedDays().contains(term.getTime().getStartDate()))
             return false;
-        if(getBeginningDate() != null  && term.getTime().getStartDate().isBefore(getBeginningDate()) && getEndingDate() != null && term.getTime().getStartDate().isAfter(getEndingDate()))
+        if(getBeginningDate() != null  && getEndingDate() != null
+                && ((term.getTime().getStartDate().isBefore(getBeginningDate()) || term.getTime().getEndDate().isAfter(getEndingDate()))
+        || (term.getTime().getEndDate().isBefore(getBeginningDate()) || term.getTime().getStartDate().isAfter(getEndingDate()))))
             return false;
         if(!term.getTime().getStartDate().equals(term.getTime().getEndDate()))
             return false;

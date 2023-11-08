@@ -20,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ScheduleCollectionTest {
     @Test
-    public void termAvailableTest()
-    {
+    public void termAvailableTest() throws RoomAlreadyExistsException {
 
         // moze da se desi da nece da radi zbog now
         LocalTime sad = LocalTime.parse("12:00", DateTimeFormatter.ofPattern("HH:mm"));
@@ -31,6 +30,7 @@ public class ScheduleCollectionTest {
         System.out.println("da");
         ScheduleCollection scheduleCollection = new ScheduleCollection();
         scheduleCollection.getExcludedDays().add(localDate);
+        scheduleCollection.addRoom("Raf1",30,null);
         scheduleCollection.setBeginningDate(LocalDate.now().minusWeeks(2));
         scheduleCollection.setEndingDate(LocalDate.now().minusWeeks(1));
         scheduleCollection.getTerms().add(new Term(new Room("Raf1",30,null),new Time(LocalDate.now().minusWeeks(2),LocalDate.now().minusWeeks(2), sad.minusHours(4),120),null));
@@ -68,13 +68,14 @@ public class ScheduleCollectionTest {
 
     }
     @Test
-    public void addTermTest(){
+    public void addTermTest() throws RoomAlreadyExistsException {
         LocalTime sad = LocalTime.parse("12:00", DateTimeFormatter.ofPattern("HH:mm"));
         ScheduleCollection scheduleCollection = new ScheduleCollection();
         String dateStr = "2023-09-28";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // ovo je samo da vidimo da l radi kad se stavi datum kao string
         LocalDate localDate = LocalDate.parse(dateStr, formatter);
         scheduleCollection.getExcludedDays().add(localDate);
+        scheduleCollection.addRoom("Raf1",30,null);
         scheduleCollection.setBeginningDate(LocalDate.now().minusWeeks(2));
         scheduleCollection.setEndingDate(LocalDate.now().minusWeeks(1));
         scheduleCollection.getTerms().add(new Term(new Room("Raf1",30,null),new Time(LocalDate.now().minusWeeks(2),LocalDate.now().minusWeeks(2), sad.minusHours(4),120),null));
@@ -111,12 +112,13 @@ public class ScheduleCollectionTest {
 
     // za test: jedan normalan, jedan gde nema sta da obrise, jedan gde je novi termin zauzet
     @Test
-    public void changeTermTest(){
+    public void changeTermTest() throws RoomAlreadyExistsException {
         LocalTime sad = LocalTime.parse("12:00", DateTimeFormatter.ofPattern("HH:mm"));
         ScheduleCollection scheduleCollection = new ScheduleCollection();
         scheduleCollection.setBeginningDate(LocalDate.now().minusWeeks(6));
         scheduleCollection.setEndingDate(LocalDate.now().plusWeeks(6));
-
+        scheduleCollection.addRoom("Raf1",30,null);
+        scheduleCollection.addRoom("Raf2",30,null);
         scheduleCollection.getTerms().add(new Term(new Room("Raf1",30,null),new Time(LocalDate.now().minusWeeks(2),LocalDate.now().minusWeeks(2), sad.minusHours(4),120),null));
         scheduleCollection.getTerms().add(new Term(new Room("Raf2",30,null),new Time(LocalDate.now().minusWeeks(2),LocalDate.now().minusWeeks(2), sad.minusHours(2),120),null));
         assertThrows(TermDoesNotExistException.class, () -> scheduleCollection.changeTerm(new Term(new Room("Raf3",30,null),new Time(LocalDate.now().minusWeeks(2),LocalDate.now().minusWeeks(2), sad.minusHours(4),120),null)
