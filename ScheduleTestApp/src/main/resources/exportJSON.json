@@ -1,0 +1,74 @@
+[ {
+  "room" : {
+    "name" : "RAF1",
+    "capacity" : 30,
+    "equipment" : {
+      "Racunar" : 2
+    }
+  },
+  "time" : {
+    "startDate" : "2023-10-29",
+    "endDate" : "2023-10-29",
+    "startTime" : "09:15:00",
+    "endTime" : "11:15:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Mladen Jovanovic",
+    "Predmet" : "UUP"
+  }
+}, {
+  "room" : {
+    "name" : "RAF1",
+    "capacity" : 30,
+    "equipment" : {
+      "Racunar" : 2
+    }
+  },
+  "time" : {
+    "startDate" : "2023-10-29",
+    "endDate" : "2023-10-29",
+    "startTime" : "11:15:00",
+    "endTime" : "12:00:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Mladen Jovanovic",
+    "Predmet" : "UUP"
+  }
+}, {
+  "room" : {
+    "name" : "RAF1",
+    "capacity" : 30,
+    "equipment" : {
+      "Racunar" : 2
+    }
+  },
+  "time" : {
+    "startDate" : "2023-10-29",
+    "endDate" : "2023-10-29",
+    "startTime" : "12:15:00",
+    "endTime" : "14:15:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Mladen Jovanovic",
+    "Predmet" : "UUP"
+  }
+}, {
+  "room" : {
+    "name" : "RAF1",
+    "capacity" : 30,
+    "equipment" : {
+      "Racunar" : 30,
+      "Tabla" : 1
+    }
+  },
+  "time" : {
+    "startDate" : "2023-11-23",
+    "endDate" : "2023-11-23",
+    "startTime" : "09:00:00",
+    "endTime" : "10:00:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Uros",
+    "Asistent" : "Dusan"
+  }
+} ]

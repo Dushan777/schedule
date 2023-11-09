@@ -1,5 +1,8 @@
 package org.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +19,7 @@ import org.exceptions.TermAlreadyExistsException;
 import org.model.*;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -172,7 +176,32 @@ public class ScheduleWeekly extends ScheduleSpecification {
 
     @Override
     public void saveAsJSON(List<Term> terms, String fileName) throws IOException {
+        FileWriter fileWriter = new FileWriter(fileName);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        terms.sort(new TermComparator());
+        List<Term> curr = new ArrayList<>();
+        List<Term> adjustedTerms = new ArrayList<>();
+        for (Term term : terms) {
+            int count = 0;
+            if (curr.contains(term))
+                continue;
+            for (Term t : terms) {
+                if (t.equals(new Term(term.getRoom(), new Time(term.getTime().getStartDate().plusWeeks(count + 1), term.getTime().getEndDate().plusWeeks(count + 1), term.getTime().getStartTime(), term.getTime().getEndTime()), term.getAdditionalData()))) {
+                    count++;
+                    if (!curr.contains(t))
+                        curr.add(t);
+                }
+            }
+            adjustedTerms.add(new Term(term.getRoom(), new Time(term.getTime().getStartDate(), term.getTime().getEndDate().plusWeeks(count), term.getTime().getStartTime(), term.getTime().getEndTime()), term.getAdditionalData()));
+        }
 
+        mapper.writeValue(fileWriter, adjustedTerms);
+
+        fileWriter.close();
     }
 
     @Override

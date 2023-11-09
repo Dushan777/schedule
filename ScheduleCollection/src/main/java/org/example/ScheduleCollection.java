@@ -1,10 +1,13 @@
 package org.example;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -20,6 +23,7 @@ import org.exceptions.TermDoesNotExistException;
 import org.model.*;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -138,14 +142,16 @@ public class ScheduleCollection extends ScheduleSpecification {
 
     @Override
     public void saveAsJSON(List<Term> terms, String fileName) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (PrintWriter writer = new PrintWriter(fileName + ".json")) {
-            writer.println(gson.toJson(terms));
-        }
-        catch (Exception e)
-        {
-            throw new IOException(e);
-        }
+        FileWriter fileWriter = new FileWriter(fileName);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        mapper.writeValue(fileWriter, terms);
+
+        fileWriter.close();
 
     }
     @Override
