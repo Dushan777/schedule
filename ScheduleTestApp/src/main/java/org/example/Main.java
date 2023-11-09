@@ -16,18 +16,20 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ScheduleSpecification schedule = new ScheduleWeekly();
+        ScheduleSpecification schedule = new ScheduleCollection();
         LocalTime sad = LocalTime.of(12, 0);
         List<Term> termini = schedule.getTerms();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Unesite ime fajla(bez \".txt\") sa podacima o ucionicama, datumima trajanja rasporeda i iskljucenim danima:");
-        String path = scanner.nextLine();
-        try {
-            schedule.initialize("ScheduleTestApp/src/main/resources/"+path+".txt");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        while(true) {
+            try {
+                String path = scanner.nextLine();
+                schedule.initialize("ScheduleTestApp/src/main/resources/" + path + ".txt");
+                break;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
-
         String line1;
         String[] splitLine;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -49,11 +51,19 @@ public class Main {
             System.out.println("11. Load from CSV");// termini1,config1
             System.out.println("12. Load from JSON");
             System.out.println("13. Save to CSV");//   exportCSV
-            System.out.println("14. Save to JSON");
+            System.out.println("14. Save to JSON");//   exportJSON
             System.out.println("15. Save to PDF");//   exportPDF
             System.out.println("0. Exit");//
             scanner = new Scanner(System.in);
-            int option = Integer.parseInt(scanner.nextLine());
+            int option;
+            while(true) {
+                try {
+                    option = Integer.parseInt(scanner.nextLine());
+                    break;
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
             switch (option)
             {
                 case 1:
@@ -231,11 +241,15 @@ public class Main {
                         for(Term t : schedule.getTerms())
                             System.out.println(t);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     catch (DifferentDateException  | TermAlreadyExistsException e)
                     {
                         System.out.println("Podaci iz fajla su nevalidni!");
+                    }
+                    catch (ArrayIndexOutOfBoundsException e)
+                    {
+                        System.out.println("Morate uneti 2 fajla");
 
                     }
                     break;
@@ -250,11 +264,18 @@ public class Main {
                         schedule.saveAsCSV(termini,"ScheduleTestApp/src/main/resources/"+line+".csv");
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 case 14:
-                    System.out.println("Save to JSON");
+                    try {
+                        scanner = new Scanner(System.in);
+                        System.out.println("Unesite ime fajla");
+                        String line = scanner.nextLine();
+                        schedule.saveAsJSON(termini,"ScheduleTestApp/src/main/resources/"+line+".json");
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 15:
                     System.out.println("Save to PDF");
@@ -265,7 +286,7 @@ public class Main {
                         String line = scanner.nextLine();
                         schedule.saveAsPDF(termini,"ScheduleTestApp/src/main/resources/"+line+".pdf");
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 case 0:
