@@ -41,15 +41,15 @@ public class Main {
             System.out.println("1. Add room"); // RAF1,30,Racunar,2,Projektor,1
             System.out.println("2. Add term");//RAF1,30,11/23/2023,01/09/2024,09:00,11:00,profesor,urosh,asistent,dushan,Wednesday
             System.out.println("3. Delete term");//RAF1,30,11/15/2023,11/29/2023,09:15,11:15,Wednesday
-            System.out.println("4. Change term");
+            System.out.println("4. Change term");//
             System.out.println("5. Check if available");//RAF1,30,11/15/2023,11/29/2023,09:15,11:15,Wednesday
             System.out.println("6. All free terms");//
             System.out.println("7. All booked terms");//
             System.out.println("8. Filter by room"); // true,RAF1,30,Racunar,2,Projektor,1
             System.out.println("9. Filter by time or additional data");//false,01/01/2024,01/13/2024,09:15,11:15,null,Wednesday
-            System.out.println("10. Filter by anything");//
+            System.out.println("10. Filter by anything");// true,RAF1,30,Racunar,2,Projektor,1 01/01/2024,01/13/2024,09:15,11:15,null,Wednesday
             System.out.println("11. Load from CSV");// termini1,config1
-            System.out.println("12. Load from JSON");
+            System.out.println("12. Load from JSON");// termini1
             System.out.println("13. Save to CSV");//   exportCSV
             System.out.println("14. Save to JSON");//   exportJSON
             System.out.println("15. Save to PDF");//   exportPDF
@@ -417,7 +417,14 @@ public class Main {
                     }
                     break;
                 case 12:
-                    System.out.println("Load from JSON");
+                    try {
+                        scanner = new Scanner(System.in);
+                        System.out.println("Unesite ime fajla");
+                        String line = scanner.nextLine();
+                        schedule.loadFromJSON("ScheduleTestApp/src/main/resources/"+line+".json");
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 13:
                     try {
@@ -459,6 +466,9 @@ public class Main {
                     System.out.println("Invalid option");
                     break;
             }
+            scanner = new Scanner(System.in);
+            System.out.println("Enter anything to continue:");
+            scanner.nextLine();
         }
 
 

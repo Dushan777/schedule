@@ -112,13 +112,6 @@ public class ScheduleCollection extends ScheduleSpecification {
         throw new TermDoesNotExistException();
     }
 
-    // za test: jedan normalan, jedan gde nema sta da obrise, jedan gde je novi termin zauzet
-
-    /*
-    t t
-    f u
-    t f
-     */
 
     // TESTIRANO
     @Override
@@ -143,7 +136,7 @@ public class ScheduleCollection extends ScheduleSpecification {
         FileWriter fileWriter = new FileWriter(fileName);
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        mapper.setDateFormat(new SimpleDateFormat("MM-dd-yyyy"));
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
@@ -219,7 +212,11 @@ public class ScheduleCollection extends ScheduleSpecification {
 
     @Override
     public void loadFromJSON(String fileName) throws IOException {
-
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(new SimpleDateFormat("MM-dd-yyyy"));
+        objectMapper.registerModule(new JavaTimeModule());
+        File file = new File(fileName);
+        getTerms().addAll(Arrays.asList(objectMapper.readValue(file, Term[].class)));
     }
 
     @Override

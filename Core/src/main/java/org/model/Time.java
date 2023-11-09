@@ -1,5 +1,7 @@
 package org.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,7 +31,8 @@ public class Time {
     private LocalTime endTime;
 
     // za prvu impl. startDateTime i endDate ce biti isti
-    public Time(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+    @JsonCreator
+    public Time(@JsonProperty("startDate") LocalDate startDate, @JsonProperty("endDate")LocalDate endDate, @JsonProperty("startTime")LocalTime startTime, @JsonProperty("endTime")LocalTime endTime) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.startTime = startTime;

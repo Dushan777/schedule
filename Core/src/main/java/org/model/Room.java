@@ -1,6 +1,8 @@
 package org.model;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +16,9 @@ public class Room {
     private int capacity;   // kapacitet prostorije
     private Map<String, Integer> equipment; // prvo ide stvar pa njena kolicina
 
-    public Room(String name, int capacity, Map<String, Integer> equipment) {
+
+    @JsonCreator
+    public Room(@JsonProperty("name")String name, @JsonProperty("capacity")int capacity, @JsonProperty("equipment")Map<String, Integer> equipment) {
         this.name = name;
         this.capacity = capacity;
         this.equipment = (equipment != null) ? equipment : new HashMap<>();;

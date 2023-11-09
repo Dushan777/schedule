@@ -179,7 +179,7 @@ public class ScheduleWeekly extends ScheduleSpecification {
         FileWriter fileWriter = new FileWriter(fileName);
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        mapper.setDateFormat(new SimpleDateFormat("MM-dd-yyyy"));
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         terms.sort(new TermComparator());
