@@ -1,7 +1,6 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,7 +24,6 @@ import org.model.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -178,28 +176,45 @@ public class ScheduleCollection extends ScheduleSpecification {
 
     @Override
     public void saveAsPDF(List<Term> terms,String filePath) throws IOException {
-            PDDocument document = new PDDocument();
-            PDPage page = new PDPage(PDRectangle.A4);
-            document.addPage(page);
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
 
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-            // Export Student Information
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(50, 600);
-            contentStream.showText("Schedule information");
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(0, -20);
-            //contentStream.beginText();
-            for (Term term : terms) {
-                String termData = term.getRoom().getName()+","+term.getRoom().getCapacity()+","+term.getTime().getStartDate()+","+term.getTime().getStartTime()+","+term.getTime().getEndTime()+","+term.getAdditionalData();
-                contentStream.showText(termData);
-                contentStream.newLineAtOffset(0, -15);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        contentStream.beginText();
+        contentStream.newLineAtOffset(50, 800);
+        contentStream.showText("Schedule information");
+        contentStream.setFont(PDType1Font.HELVETICA, 12);
+        contentStream.newLineAtOffset(0, -20);
+
+        int termCounter = 0;
+
+        for (Term term : terms) {
+            if (termCounter == 35) {
+                // Start a new page
+                contentStream.endText();
+                contentStream.close();
+                page = new PDPage(PDRectangle.A4);
+                document.addPage(page);
+                contentStream = new PDPageContentStream(document, page);
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.beginText();
+                contentStream.newLineAtOffset(50, 800);
+                termCounter = 0;
             }
-            contentStream.endText();
-            contentStream.close();
-            document.save(filePath);
-            document.close();
+
+            String termData = term.getRoom().getName() + "," + term.getRoom().getCapacity() + "," + term.getTime().getStartDate() + ","
+                    + term.getTime().getStartTime() + "," + term.getTime().getEndTime() + "," + term.getAdditionalData();
+            contentStream.showText(termData);
+            contentStream.newLineAtOffset(0, -15);
+            termCounter++;
+        }
+
+        contentStream.endText();
+        contentStream.close();
+        document.save(filePath);
+        document.close();
     }
 
     @Override

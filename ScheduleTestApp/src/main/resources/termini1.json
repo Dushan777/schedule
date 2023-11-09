@@ -1,0 +1,55 @@
+[ {
+  "room" : {
+    "name" : "RAF1",
+    "capacity" : 30,
+    "equipment" : {
+      "Racunar" : 30
+    }
+  },
+  "time" : {
+    "startDate" : "2023-11-01",
+    "endDate" : "2023-11-29",
+    "startTime" : "09:15:00",
+    "endTime" : "11:15:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Mladen Jovanovic",
+    "Predmet" : "UUP"
+  }
+}, {
+  "room" : {
+    "name" : "RAF1",
+    "capacity" : 30,
+    "equipment" : {
+      "Racunar" : 30
+    }
+  },
+  "time" : {
+    "startDate" : "2023-11-15",
+    "endDate" : "2023-11-29",
+    "startTime" : "11:15:00",
+    "endTime" : "13:15:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Mladen Jovanovic",
+    "Predmet" : "UUP"
+  }
+} , {
+  "room" : {
+    "name" : "RAF2",
+    "capacity" : 20,
+    "equipment" : {
+      "Racunar" : 15
+    }
+  },
+  "time" : {
+    "startDate" : "2023-11-15",
+    "endDate" : "2023-12-29",
+    "startTime" : "15:15:00",
+    "endTime" : "17:00:00"
+  },
+  "additionalData" : {
+    "Profesor" : "Jefimija Najdic",
+    "Predmet" : "SK"
+  }
+}]

@@ -246,20 +246,8 @@ public class ScheduleWeekly extends ScheduleSpecification {
 
     @Override
     public void saveAsPDF(List<Term> terms,String filePath) throws IOException {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage(PDRectangle.A4);
-        document.addPage(page);
-
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        // Export Student Information
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-        contentStream.beginText();
-        contentStream.newLineAtOffset(50, 600);
-        contentStream.showText("Schedule information");
-        contentStream.setFont(PDType1Font.HELVETICA, 12);
-        contentStream.newLineAtOffset(0, -20);
-        //contentStream.beginText();
         List<Term> curr = new ArrayList<>();
+        List<Term> adjustedTerms = new ArrayList<>();
         for (Term term : terms) {
             int count = 0;
             if(curr.contains(term))
@@ -273,10 +261,43 @@ public class ScheduleWeekly extends ScheduleSpecification {
                         curr.add(t);
                 }
             }
-            String termData = term.getRoom().getName()+", "+term.getRoom().getCapacity()+", "+term.getTime().getStartDate()+","+term.getTime().getStartTime()+", "+term.getTime().getEndTime()+", "+term.getTime().getEndDate().plusWeeks(count) +", "+term.getAdditionalData() + ", " + Time.getWeekDay(term.getTime().getStartDate());
+            adjustedTerms.add(new Term(term.getRoom(), new Time(term.getTime().getStartDate(), term.getTime().getEndDate().plusWeeks(count), term.getTime().getStartTime(), term.getTime().getEndTime()), term.getAdditionalData()));
+        }
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
+
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        contentStream.beginText();
+        contentStream.newLineAtOffset(50, 800);
+        contentStream.showText("Schedule information");
+        contentStream.setFont(PDType1Font.HELVETICA, 12);
+        contentStream.newLineAtOffset(0, -20);
+
+        int termCounter = 0;
+
+        for (Term term : adjustedTerms) {
+            if (termCounter == 35) {
+                // Start a new page
+                contentStream.endText();
+                contentStream.close();
+                page = new PDPage(PDRectangle.A4);
+                document.addPage(page);
+                contentStream = new PDPageContentStream(document, page);
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.beginText();
+                contentStream.newLineAtOffset(50, 800);
+                termCounter = 0;
+            }
+
+            String termData = term.getRoom().getName() + "," + term.getRoom().getCapacity() + "," + term.getTime().getStartDate() + ","
+                    + term.getTime().getStartTime() + "," + term.getTime().getEndTime() + "," + term.getTime().getEndDate() + "," + term.getAdditionalData() + "," + Time.getWeekDay(term.getTime().getStartDate());
             contentStream.showText(termData);
             contentStream.newLineAtOffset(0, -15);
+            termCounter++;
         }
+
         contentStream.endText();
         contentStream.close();
         document.save(filePath);
