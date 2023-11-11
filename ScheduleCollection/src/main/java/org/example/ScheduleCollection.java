@@ -180,7 +180,6 @@ public class ScheduleCollection extends ScheduleSpecification {
         contentStream.showText("Schedule information");
         contentStream.setFont(PDType1Font.HELVETICA, 12);
         contentStream.newLineAtOffset(0, -20);
-
         int termCounter = 0;
 
         for (Term term : terms) {
@@ -279,13 +278,4 @@ public class ScheduleCollection extends ScheduleSpecification {
     }
 
 
-
-    /*private boolean termsOverlap(Term t, Term term) {
-        if(!t.getTime().getStartDate().equals(term.getTime().getStartDate()))
-            return false;
-        if (t.getRoom().equals(term.getRoom()))
-            return !((t.getTime().getEndTime().isBefore(term.getTime().getStartTime()) || t.getTime().getStartTime().isAfter(term.getTime().getEndTime())
-            || t.getTime().getEndTime().equals(term.getTime().getStartTime()) || t.getTime().getStartTime().equals(term.getTime().getEndTime())));
-        return false;
-    }*/
 }

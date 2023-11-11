@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 @Getter
@@ -38,5 +39,35 @@ public class Room {
                 ", capacity=" + capacity +
                 ", equipment=" + equipment +
                 '}';
+    }
+    public static Room getRoomByName(String name, ScheduleSpecification schedule) throws NullPointerException
+    {
+        for(Room r : schedule.getRooms())
+        {
+            if(r.getName().equals(name))
+                return r;
+        }
+        throw new NullPointerException("Room not found!");
+    }
+
+    public static Map<String, String> getAdditionalDataByTerm(Term term, ScheduleSpecification schedule, String weekDay) throws NullPointerException
+    {
+        LocalDate start = term.getTime().getStartDate();
+        LocalDate end = term.getTime().getEndDate();
+        while(!start.isAfter(end)) {
+            if(start.isBefore(end) && !Time.getWeekDay(start).equals(weekDay))
+            {
+                start = start.plusDays(1);
+                continue;
+            }
+            Term term1 = new Term(term.getRoom(), new Time(start, start, term.getTime().getStartTime(), term.getTime().getEndTime()), null);
+            for (Term t : schedule.getTerms()) {
+                if (t.equals(term1))
+                    return t.getAdditionalData();
+            }
+            start = start.plusDays(7);
+        }
+
+        throw new NullPointerException("Term not found!");
     }
 }

@@ -41,7 +41,7 @@ public class Main {
             System.out.println("1. Add room"); // RAF1,30,Racunar,2,Projektor,1
             System.out.println("2. Add term");//RAF1,30,11/23/2023,01/09/2024,09:00,11:00,profesor,urosh,asistent,dushan,Wednesday
             System.out.println("3. Delete term");//RAF1,30,11/15/2023,11/29/2023,09:15,11:15,Wednesday
-            System.out.println("4. Change term");//
+            System.out.println("4. Change term");//RAF1,30,10/29/2023,11/29/2023,09:15,11:15,Wednesday,RAF2,20,11/15/2023,12/30/2023,10:00,12:00
             System.out.println("5. Check if available");//RAF1,30,11/15/2023,11/29/2023,09:15,11:15,Wednesday
             System.out.println("6. All free terms");//
             System.out.println("7. All booked terms");//
@@ -67,7 +67,6 @@ public class Main {
             switch (option)
             {
                 case 1:
-                    System.out.println("Add room");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -95,7 +94,6 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.println("Add term");
                     termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
@@ -113,7 +111,7 @@ public class Main {
                                 h1.put(splitLine[i], splitLine[i + 1]);
                             }
                             try {
-                                schedule.addTerm(new Term(new Room(splitLine[0], Integer.parseInt(splitLine[1]), getRoomByName(splitLine[0], schedule).getEquipment()), new Time(LocalDate.parse(splitLine[2], formatter), LocalDate.parse(splitLine[3], formatter), LocalTime.parse(splitLine[4], formatter1), LocalTime.parse(splitLine[5], formatter1)), h1), splitLine[size - 1]);
+                                schedule.addTerm(new Term(new Room(splitLine[0], Integer.parseInt(splitLine[1]), Room.getRoomByName(splitLine[0], schedule).getEquipment()), new Time(LocalDate.parse(splitLine[2], formatter), LocalDate.parse(splitLine[3], formatter), LocalTime.parse(splitLine[4], formatter1), LocalTime.parse(splitLine[5], formatter1)), h1), splitLine[size - 1]);
                             }
                             catch (NullPointerException e)
                             {
@@ -122,7 +120,7 @@ public class Main {
                         }
                         else if(size == 8) {
                             try {
-                                schedule.addTerm(new Term(new Room(splitLine[0], Integer.parseInt(splitLine[1]), getRoomByName(splitLine[0], schedule).getEquipment()), new Time(LocalDate.parse(splitLine[2], formatter), LocalDate.parse(splitLine[3], formatter), LocalTime.parse(splitLine[4], formatter1), LocalTime.parse(splitLine[5], formatter1)), null), splitLine[size - 1]);
+                                schedule.addTerm(new Term(new Room(splitLine[0], Integer.parseInt(splitLine[1]), Room.getRoomByName(splitLine[0], schedule).getEquipment()), new Time(LocalDate.parse(splitLine[2], formatter), LocalDate.parse(splitLine[3], formatter), LocalTime.parse(splitLine[4], formatter1), LocalTime.parse(splitLine[5], formatter1)), null), splitLine[size - 1]);
                             }
                             catch (NullPointerException e)
                             {
@@ -138,7 +136,6 @@ public class Main {
                     }
                     break;
                 case 3:
-                    System.out.println("Delete term");
                     termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
@@ -159,9 +156,27 @@ public class Main {
                     break;
                 case 4:
                     System.out.println("Change term");
+                    termini = schedule.getTerms();
+                    scanner = new Scanner(System.in);
+                    line1 = scanner.nextLine();
+                    splitLine = line1.split(",");
+                    size = splitLine.length;
+                    // soba,kapacitet,datum,datum,vreme,vreme,dan ,   soba,kapacitet,datum,datum,vreme,vreme
+                    try {
+                        if(size == 13)
+                        {
+                            Term term = new Term(new Room(splitLine[0],Integer.parseInt(splitLine[1]),null),new Time(LocalDate.parse(splitLine[2],formatter),LocalDate.parse(splitLine[3],formatter),LocalTime.parse(splitLine[4],formatter1),LocalTime.parse(splitLine[5],formatter1)),null);
+                            schedule.changeTerm(new Term(new Room(splitLine[0],Integer.parseInt(splitLine[1]),Room.getRoomByName(splitLine[0],schedule).getEquipment()),new Time(LocalDate.parse(splitLine[2],formatter),LocalDate.parse(splitLine[3],formatter),LocalTime.parse(splitLine[4],formatter1),LocalTime.parse(splitLine[5],formatter1)),Room.getAdditionalDataByTerm(term,schedule, splitLine[6])),new LittleTerm(new Room(splitLine[7],Integer.parseInt(splitLine[8]),Room.getRoomByName(splitLine[7],schedule).getEquipment()),new Time(LocalDate.parse(splitLine[9],formatter),LocalDate.parse(splitLine[10],formatter),LocalTime.parse(splitLine[11],formatter1),LocalTime.parse(splitLine[12],formatter1))),splitLine[6]);
+                        }
+                        else
+                        {
+                            System.out.println("Invalid input");
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 5:
-                    System.out.println("Check if available");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -181,12 +196,10 @@ public class Main {
                     }
                     break;
                 case 6:
-                    System.out.println("All free terms");
                     termini = schedule.allFreeTerms();
                     termini.forEach(System.out::println);
                     break;
                 case 7:
-                    System.out.println("All booked terms");
                     termini = schedule.getTerms();
                     termini.forEach(System.out::println);
                     break;
@@ -226,7 +239,6 @@ public class Main {
                     }
                     break;
                 case 9:
-                    System.out.println("Filter by time or additional data");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -288,7 +300,6 @@ public class Main {
                     }
                     break;
                 case 10:
-                    System.out.println("Filter by anything");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     if(!line1.contains(" "))
@@ -473,13 +484,5 @@ public class Main {
 
 
     }
-    public static Room getRoomByName(String name, ScheduleSpecification schedule)
-    {
-        for(Room r : schedule.getRooms())
-        {
-            if(r.getName().equals(name))
-                return r;
-        }
-        return null;
-    }
+
 }

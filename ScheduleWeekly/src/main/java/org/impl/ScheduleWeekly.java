@@ -376,14 +376,4 @@ public class ScheduleWeekly extends ScheduleSpecification {
         }
     }
 
-
-
-    /*private boolean termsOverlap(Term t, Term term) {
-        if(!t.getTime().getStartDate().equals(term.getTime().getStartDate()))
-            return false;
-        if (t.getRoom().equals(term.getRoom()))
-            return !((t.getTime().getEndTime().isBefore(term.getTime().getStartTime()) || t.getTime().getStartTime().isAfter(term.getTime().getEndTime())
-                    || t.getTime().getEndTime().equals(term.getTime().getStartTime()) || t.getTime().getStartTime().equals(term.getTime().getEndTime())));
-        return false;
-    }*/
 }
