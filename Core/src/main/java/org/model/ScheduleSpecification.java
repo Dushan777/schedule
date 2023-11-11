@@ -193,7 +193,7 @@ public abstract class ScheduleSpecification {
 
 
     /**
-     *
+     * get all free terms
      * @return all free terms
      */
 
