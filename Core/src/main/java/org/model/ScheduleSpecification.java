@@ -33,7 +33,6 @@ public abstract class ScheduleSpecification {
     - premeštanje termina - brisanje i dodavanje novog termina sa istim vezanim podacima
     */
 
-    // TODO: uskladiti exceptione izmedju specifikacija i implementacija
     /**
      * initialize schedule
      * sets beginningDate, endingDate and excludedDays
@@ -99,11 +98,11 @@ public abstract class ScheduleSpecification {
 
     /**
      * add room to schedule with equipment
-     * @param name
-     * @param capacity
-     * @param equipment
-     * @throws RoomAlreadyExistsException
-     * @throws IllegalArgumentException
+     * @param name name of the room
+     * @param capacity capacity of the room
+     * @param equipment equipment of the room
+     * @throws RoomAlreadyExistsException room already exists
+     * @throws IllegalArgumentException illegal arguments
      */
     public void addRoom(String name, int capacity, Map<String, Integer> equipment) throws RoomAlreadyExistsException, IllegalArgumentException {
         Room room = new Room(name, capacity, equipment);
@@ -126,9 +125,9 @@ public abstract class ScheduleSpecification {
 
     /**
      * add room to schedule without equipment
-     * @param name
-     * @param capacity
-     * @throws RoomAlreadyExistsException
+     * @param name name of the room
+     * @param capacity  capacity of the room
+     * @throws RoomAlreadyExistsException room already exists
      */
     public void addRoom(String name, int capacity) throws RoomAlreadyExistsException {
         addRoom(name, capacity, null);
@@ -136,10 +135,11 @@ public abstract class ScheduleSpecification {
 
     /**
      * add term to schedule
-     * @param term
-     * @param weekDay
-     * @throws TermAlreadyExistsException
-     * @throws DifferentDateException
+     * @param term term you want to add
+     * @param weekDay day of the week
+     * @throws TermAlreadyExistsException term you want to add already exists
+     * @throws DifferentDateException invalid dates
+     * @throws IllegalArgumentException illegal arguments
      */
     public abstract void addTerm(Term term,String weekDay) throws TermAlreadyExistsException,DifferentDateException,IllegalArgumentException;
 
@@ -147,8 +147,8 @@ public abstract class ScheduleSpecification {
 
     /**
      * check if term is available
-     * @param term
-     * @param weekDay
+     * @param term term you want to check
+     * @param weekDay day of the week
      * @return true if term is available, false otherwise
      */
 
@@ -156,8 +156,8 @@ public abstract class ScheduleSpecification {
 
     /**
      * check if term is booked
-     * @param term
-     * @param weekDay
+     * @param term term you want to check
+     * @param weekDay day of the  week
      * @return true if term is booked, false otherwise
      */
     // NE MORA DA SE TESTIRA
@@ -168,9 +168,10 @@ public abstract class ScheduleSpecification {
 
     /**
      * delete term from schedule
-     * @param term
-     * @param weekDay
-     * @throws TermDoesNotExistException
+     * @param term term you want to delete
+     * @param weekDay day of the week
+     * @throws TermDoesNotExistException unexisting term
+     * @throws IllegalArgumentException illegal arguments
      */
     public abstract void deleteTerm(Term term, String weekDay) throws TermDoesNotExistException, IllegalArgumentException;
 
