@@ -177,38 +177,17 @@ public abstract class ScheduleSpecification {
 
     /**
      * change term with keeping additional data
-     * When using this method in ScheduleCollection, weekday is not used
-     * When using this method in ScheduleWeekly, weekday is used and has to be the same in oldTerm and newTerm
      *
-     * @param oldTerm
-     * @param newTerm
-     * @param weekDay
-     * @throws TermDoesNotExistException
-     * @throws TermAlreadyExistsException
-     * @throws DifferentDateException
+     * @param oldTerm term for change
+     * @param newTerm term with new data
+     * @param weekDay day of the week
+     * @throws TermDoesNotExistException unexisting term
+     * @throws TermAlreadyExistsException term already exists
+     * @throws DifferentDateException startDate and endDate are different
      */
-    //TODO: mozda changeTerm ovde da se implementira
     public abstract void changeTerm(Term oldTerm, LittleTerm newTerm, String weekDay) throws TermDoesNotExistException, TermAlreadyExistsException,DifferentDateException,IllegalArgumentException;
 
-    //TODO: izlistavanje slobodnih termina, prostorija...
 
-    /*
-    Najbitnije operacije nad rasporedom su provera zauzetosti termina i prostora i izlistavanje slobodnih
-    termina po različitim kriterijumima. Vreme se prilikom ovih provera može zadavati na dva načina, prvi je
-    zadavanje tačnog datuma, a drugi je zadavanje dana u nedelji i perioda (na primer da li je slobodan
-    termin sredom 10-12h u periodu od 1.10.2023. do 1.12.2023). Termini se mogu zadavati kao vreme
-    početka i završetka ili kao vreme početka i trajanje. Izlistavanje slobodnih termina može da uključi i
-    tačnu prostoriju, prostoriju sa određenim osobinama (na primer učionica sa računarima, projektorom,
-
-    da ima više od 30 mesta i slično), a može i da bude nezavisno od prostorije (izlistati sve učionice koja je
-    slobodna tog i tog dana). Obezbediti i pretraživanje rasporeda prema vezanim podacima (na primer ako
-    je nastavnik vezani podatak, izlistati sve termine tog nastavnika ili sve termine kada je on slobodan).
-    Potrebno je obezbediti operacije za izlistavanje slobodnih termina, ali i zauzetih termina, provera da li je
-    određeni termin slobodan ili zauzet, po raličitim kriterijumima kako je prethodno objašnjeno.
-
-
-    TODO: filtriranje po additionalData i vremenu za slobodne termine i kombinacija rooms i time za slobodne termine
-     */
 
 
     /**
@@ -348,40 +327,6 @@ public abstract class ScheduleSpecification {
         return finalTerms;
     }
 
-    /*
-     * Filter by rooms for available terms
-     * if name is "" or capacity <= 0 or equipment is empty, it is not used in filtering
-     * @param name
-     * @param capacity
-     * @param equipment
-     * @return filtered terms
-
-    public List<Term> filterByRoomAvailable(String name,int capacity, Map<String,Integer> equipment)
-    {
-        List<Term> filteredTerms = new ArrayList<>(allFreeTerms());
-        for(Term t : filteredTerms)
-        {
-            if(capacity > 0 && t.getRoom().getCapacity() < capacity)
-                filteredTerms.remove(t);
-            if(name != null && !name.equals("") && !t.getRoom().getName().equals(name))
-                filteredTerms.remove(t);
-            if(equipment != null && !equipment.isEmpty() && !mapHasEquipment(t.getRoom().getEquipment(),equipment))
-                filteredTerms.remove(t);
-        }
-        return filteredTerms;
-    }*/
-
-    /*
-     * Filter by rooms
-     * if name is "" or capacity <= 0 or equipment is empty, it is not used in filtering
-     * termss must not be null
-     * @param name
-     * @param capacity
-     * @param equipment
-     * @param termss
-     * @param booked if true, filter booked terms, if false, filter free terms
-     * @return filtered terms
-     */
 
     private List<Term> filterByRooms(String name,int capacity, Map<String,Integer> equipment, List<Term> termss, boolean booked)
     {
@@ -418,22 +363,7 @@ public abstract class ScheduleSpecification {
         return filterByRooms(name,capacity,equipment,terms,booked);
     }
 
-    // kod opcije za samo jedan dan necemo imati endDate i weekDay provere, ali mislim da ne treba jos jedna metoda
-    // jer je ovo dovoljno opsta, ali ovo je u slucaju da on ima obe opcije u obe implementacije sto je nama logicno
 
-    /*
-     * Filter by time or additional data
-     * if any part of time is null, it is not used in filtering
-     * if additionalData is empty, it is not used in filtering
-     * if weekDay is "", it is not used in filtering
-     * termss must not be null
-     * time is interval from-to
-     * @param time
-     * @param additionalData
-     * @param weekDay
-     * @param termss
-     * @return filtered terms
-     */
     private List<Term> filterByTimeOrAdditionalData(Time time, Map<String,String> additionalData, String weekDay, List<Term> termss, boolean booked)
     {
         List<Term> filteredTerms;
@@ -502,9 +432,9 @@ public abstract class ScheduleSpecification {
 
     /**
      * Filter by time or additional data
-     * @param time
-     * @param additionalData
-     * @param weekDay
+     * @param time if any part of time is null, it is not used in filtering
+     * @param additionalData if empty or null, it is not used in filtering
+     * @param weekDay if "" it is not used in filtering
      * @param booked if true, filter booked terms, if false, filter free terms
      * @return filtered terms
      */
@@ -513,24 +443,12 @@ public abstract class ScheduleSpecification {
         return filterByTimeOrAdditionalData(time,additionalData,weekDay,terms,booked);
     }
 
-    /*
-     * Filter by everything
-     * Combination of filterByRooms and filterByTimeOrAdditionalData
-     * @param name
-     * @param capacity
-     * @param equipment
-     * @param time
-     * @param additionalData
-     * @param weekDay
-     * @param termss
-     * @return filtered terms
-     */
+
     private List<Term> filterByEverything(String name,int capacity, Map<String,Integer> equipment,Time time, Map<String,String> additionalData, String weekDay, List<Term> termss, boolean booked)
     {
         List<Term> filteredTerms;
         List<Term> filteredTerms2;
 
-        // TODO: booked umesto true
         filteredTerms = filterByRooms(name,capacity,equipment,booked);
         filteredTerms2 = filterByTimeOrAdditionalData(time,additionalData,weekDay,filteredTerms, booked);
         return filteredTerms2;
@@ -539,13 +457,13 @@ public abstract class ScheduleSpecification {
     /**
      * Filter by everything
      * Combination of filterByRooms and filterByTimeOrAdditionalData
-     * @param name
-     * @param capacity
-     * @param equipment
-     * @param time
-     * @param additionalData
-     * @param weekDay
-     * @param booked
+     * @param name room name, if "" or null, it is not used in filtering
+     * @param capacity room capacity, if <= 0, it is not used in filtering
+     * @param equipment room equipment, if empty or null, it is not used in filtering
+     * @param time if any part of time is null, it is not used in filtering
+     * @param additionalData if empty or null, it is not used in filtering
+     * @param weekDay if "" it is not used in filtering
+     * @param booked if true, filter booked terms, if false, filter free terms
      * @return filtered terms
      */
     public List<Term> filterByEverything(String name,int capacity, Map<String,Integer> equipment,Time time, Map<String,String> additionalData, String weekDay, boolean booked)
@@ -555,39 +473,40 @@ public abstract class ScheduleSpecification {
 
     /**
      * save schedule to file as JSON
-     * @param terms
-     * @param fileName
-     * @throws IOException
+     * @param terms terms you want to save
+     * @param fileName name of file you want to save to
+     * @throws IOException input output exception
      */
     public abstract void saveAsJSON(List<Term> terms, String fileName) throws IOException;
 
     /**
-     * save schedule to file as CSV
-     * @param terms
-     * @param filePath
-     * @throws IOException
+     * save schedule to file as JSON
+     * @param terms terms you want to save
+     * @param filePath name of file you want to save to
+     * @throws IOException input output exception
      */
     public abstract void saveAsCSV(List<Term> terms,String filePath) throws IOException;
 
     /**
      * save schedule to file as PDF
-     * @param terms
-     * @param filePath
-     * @throws IOException
+     * @param terms terms you want to save
+     * @param filePath name of file you want to save to
+     * @throws IOException input output exception
      */
     public abstract void saveAsPDF(List<Term> terms,String filePath) throws IOException;
 
     /**
      * load schedule from JSON file
-     * @param fileName
+     * @param fileName name of the file
+     * @param configPath name of config file
      * @throws IOException, TermAlreadyExistsException, DifferentDateException
      */
-    public abstract void loadFromJSON(String fileName) throws IOException, TermAlreadyExistsException, DifferentDateException;
+    public abstract void loadFromJSON(String fileName, String configPath) throws IOException, TermAlreadyExistsException, DifferentDateException;
 
     /**
      * load schedule from CSV file
-     * @param fileName
-     * @param configPath
+     * @param fileName name of file you want to load from
+     * @param configPath name of config file
      * @throws IOException, DifferentDateException, TermAlreadyExistsException
      */
     public abstract void loadFromCSV(String fileName, String configPath) throws IOException, DifferentDateException, TermAlreadyExistsException;

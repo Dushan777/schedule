@@ -1,37 +1,23 @@
 [ {
-  "room" : {
-    "name" : "RAF1",
-    "capacity" : 30,
-    "equipment" : {
-      "Racunar" : 2
-    }
-  },
-  "time" : {
-    "startDate" : "2023-11-01",
-    "endDate" : "2023-11-29",
-    "startTime" : "09:15:00",
-    "endTime" : "11:15:00"
-  },
-  "additionalData" : {
-    "Profesor" : "Mladen Jovanovic",
-    "Predmet" : "UUP"
-  }
+  "ImeUcionice" : "RAF1",
+  "Kapacitet" : 30,
+  "Pocetak" : "2023-10-29",
+  "PocetakCasa" : "09:15:00",
+  "KrajCasa" : "11:15:00",
+  "Kraj" : "2023-11-26",
+  "Profesor" : "Mladen Jovanovic",
+  "Predmet" : "UUP",
+  "Racunar" : 30,
+  "DanUNedelji" : "Sunday"
 }, {
-  "room" : {
-    "name" : "RAF1",
-    "capacity" : 30,
-    "equipment" : {
-      "Racunar" : 2
-    }
-  },
-  "time" : {
-    "startDate" : "2023-11-15",
-    "endDate" : "2023-11-29",
-    "startTime" : "11:15:00",
-    "endTime" : "13:15:00"
-  },
-  "additionalData" : {
-    "Profesor" : "Mladen Jovanovic",
-    "Predmet" : "UUP"
-  }
+  "ImeUcionice" : "RAF1",
+  "Kapacitet" : 30,
+  "Pocetak" : "2023-11-09",
+  "PocetakCasa" : "11:15:00",
+  "KrajCasa" : "13:15:00",
+  "Kraj" : "2023-11-23",
+  "Profesor" : "Mladen Jovanovic",
+  "Predmet" : "UUP",
+  "Racunar" : 30,
+  "DanUNedelji" : "Thursday"
 } ]

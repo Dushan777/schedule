@@ -1,7 +1,10 @@
 package org.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,6 +20,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.exceptions.TermAlreadyExistsException;
 import org.model.*;
+import org.serializer.WeeklySerializer;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -151,7 +155,6 @@ public class ScheduleWeekly extends ScheduleSpecification {
         }
     }
 
-    // TODO: moze da obrise sve, a da ne uspe da doda nijedan
     // TESTIRANO
     @Override
     public void changeTerm(Term term, LittleTerm term1, String weekDay) throws TermAlreadyExistsException, IllegalArgumentException{
@@ -178,6 +181,10 @@ public class ScheduleWeekly extends ScheduleSpecification {
     public void saveAsJSON(List<Term> terms, String fileName) throws IOException {
         FileWriter fileWriter = new FileWriter(fileName);
         ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Term.class, new WeeklySerializer());
+        mapper.registerModule(module);
+
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.setDateFormat(new SimpleDateFormat("MM-dd-yyyy"));
         mapper.registerModule(new JavaTimeModule());
@@ -305,7 +312,74 @@ public class ScheduleWeekly extends ScheduleSpecification {
     }
 
     @Override
-    public void loadFromJSON(String fileName) throws IOException {
+    public void loadFromJSON(String fileName, String configPath) throws IOException, TermAlreadyExistsException {
+        List<ConfigMapping> columnMappings = readConfig(configPath);
+        Map<Integer, String> mappings = new HashMap<>();
+        for(ConfigMapping configMapping : columnMappings) {
+            mappings.put(configMapping.getIndex(), configMapping.getOriginal());
+        }
+        columnMappings.sort(Comparator.comparingInt(ConfigMapping::getIndex));
+        FileReader fileReader = new FileReader(fileName);
+        ObjectMapper objectMapper = new ObjectMapper();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mappings.get(-1));
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern(mappings.get(-2));
+        String[] day = mappings.get(-3).split("/");
+        List<JsonNode> jsonNodes = objectMapper.readValue(fileReader, new TypeReference<List<JsonNode>>() {});
+
+        String weekDay = " ";
+
+        for(JsonNode jsonNode : jsonNodes)
+        {
+            Term term = new Term();
+            for(ConfigMapping entry : columnMappings)
+            {
+                int columnIndex = entry.getIndex();
+
+                if(columnIndex == -1 || columnIndex == -2 || columnIndex == -3) continue;
+
+                String columnName = entry.getCustom();
+
+                switch (mappings.get(columnIndex)) {
+                    case "name":
+                        term.setRoom(new Room(jsonNode.get(columnName).asText(), 0, null));
+                        break;
+                    case "capacity":
+                        term.getRoom().setCapacity(jsonNode.get(columnName).asInt());
+                        break;
+                    case "equipment":
+                        term.getRoom().getEquipment().put(columnName, jsonNode.get(columnName).asInt());
+                        break;
+
+                    case "start":
+                        LocalDate startDate = LocalDate.parse(jsonNode.get(columnName).asText(), formatter);
+                        term.setTime(new Time(startDate, startDate, null, null));
+                        break;
+                    case "end":
+                        LocalDate endDate = LocalDate.parse(jsonNode.get(columnName).asText(), formatter);
+                        term.getTime().setEndDate(endDate);
+                        break;
+                    case "startTime":
+                        LocalTime startTime = LocalTime.parse(jsonNode.get(columnName).asText(), formatter2);
+                        term.getTime().setStartTime(startTime);
+                        break;
+                    case "endTime":
+                        LocalTime endTime = LocalTime.parse(jsonNode.get(columnName).asText(), formatter2);
+                        term.getTime().setEndTime(endTime);
+                        break;
+                    case "additionalData":
+                        term.getAdditionalData().put(columnName, jsonNode.get(columnName).asText());
+                        break;
+                    case "weekDay":
+                        for (String s : day)
+                            if (s.equals(jsonNode.get(columnName).asText()))
+                                weekDay = s;
+                        if(weekDay.equals(" "))
+                            throw new IllegalArgumentException("Invalid week day!");
+                        break;
+                }
+            }
+            addTerm(term, Time.getWeekDay(term.getTime().getStartDate()));
+        }
 
     }
     @Override

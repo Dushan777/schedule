@@ -16,8 +16,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ScheduleSpecification schedule = new ScheduleCollection();
-        LocalTime sad = LocalTime.of(12, 0);
+        ScheduleSpecification schedule = new ScheduleWeekly();
         List<Term> termini = schedule.getTerms();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Unesite ime fajla(bez \".txt\") sa podacima o ucionicama, datumima trajanja rasporeda i iskljucenim danima:");
@@ -67,6 +66,7 @@ public class Main {
             switch (option)
             {
                 case 1:
+                    System.out.println("Enter room name, capacity and equipment in format:\nname,capacity,equipment1,quantity1,equipment2,quantity2...");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -94,6 +94,7 @@ public class Main {
                     }
                     break;
                 case 2:
+                    System.out.println("Enter room name, capacity, beginning date, ending date, beginning time, ending time, day and additional data in format:\nname,capacity,beginning date,ending date,beginning time,ending time,day,additional data1,value1,additional data2,value2...");
                     termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
@@ -136,6 +137,7 @@ public class Main {
                     }
                     break;
                 case 3:
+                    System.out.println("Enter room name, capacity, beginning date, ending date, beginning time, ending time and day in format:\nname,capacity,beginning date,ending date,beginning time,ending time,day");
                     termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
@@ -155,7 +157,7 @@ public class Main {
                     }
                     break;
                 case 4:
-                    System.out.println("Change term");
+                    System.out.println("Enter room name, capacity, beginning date, ending date, beginning time, ending time, day, new room name, new capacity, new beginning date, new ending date, new beginning time, new ending time in format:\nname,capacity,beginning date,ending date,beginning time,ending time,day,new name,new capacity,new beginning date,new ending date,new beginning time,new ending time");
                     termini = schedule.getTerms();
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
@@ -177,6 +179,7 @@ public class Main {
                     }
                     break;
                 case 5:
+                    System.out.println("Enter room name, capacity, beginning date, ending date, beginning time, ending time and day in format:\nname,capacity,beginning date,ending date,beginning time,ending time,day");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -239,6 +242,7 @@ public class Main {
                     }
                     break;
                 case 9:
+                    System.out.println("Filter by time or additional data. Enter true/false(true - filter booked term, false - filter available terms),beginning date, ending date, beginning time, ending time, additional data in format:\nbeginning date, ending date, beginning time, ending time, additional data1, value1, additional data2, value2...\nIf you don't want to filter by something, enter \"null\" as it's value");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     splitLine = line1.split(",");
@@ -300,6 +304,7 @@ public class Main {
                     }
                     break;
                 case 10:
+                    System.out.println("Filter by anything. Enter true/false(true - filter booked term, false - filter available terms),room name, capacity, equipment in format:\nname,capacity,equipment1,quantity1,equipment2,quantity2...\nIf you don't want to filter by something, enter \"null\" as it's value or 0 if it is capacity\n beginning date, ending date, beginning time, ending time, additional data in format:\nbeginning date, ending date, beginning time, ending time, additional data1, value1, additional data2, value2...\nIf you don't want to filter by something, enter \"null\" as it's value\nMAKE SURE TO PUT SPACE BETWEEN ROOM AND TIME/ADDITIONAL DATA FILTERS ");
                     scanner = new Scanner(System.in);
                     line1 = scanner.nextLine();
                     if(!line1.contains(" "))
@@ -430,11 +435,14 @@ public class Main {
                 case 12:
                     try {
                         scanner = new Scanner(System.in);
-                        System.out.println("Unesite ime fajla");
+                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla. Ne unositi ekstenzije!");
                         String line = scanner.nextLine();
-                        schedule.loadFromJSON("ScheduleTestApp/src/main/resources/"+line+".json");
+                        schedule.loadFromJSON("ScheduleTestApp/src/main/resources/"+line.split(",")[0]+".json",
+                                "ScheduleTestApp/src/main/resources/"+line.split(",")[1]+".txt");
+                        for(Term t : schedule.getTerms())
+                            System.out.println(t);
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        e.printStackTrace();
                     }
                     break;
                 case 13:
@@ -459,7 +467,6 @@ public class Main {
                     }
                     break;
                 case 15:
-                    System.out.println("Save to PDF");
                     //TODO: dodati nove stranice na npr. 20 termina
                     try {
                         scanner = new Scanner(System.in);

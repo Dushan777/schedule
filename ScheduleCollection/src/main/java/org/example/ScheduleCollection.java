@@ -1,6 +1,9 @@
 package org.example;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,6 +23,7 @@ import org.exceptions.DifferentDateException;
 import org.exceptions.TermAlreadyExistsException;
 import org.exceptions.TermDoesNotExistException;
 import org.model.*;
+import org.serializer.CollectionSerializer;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -138,6 +142,9 @@ public class ScheduleCollection extends ScheduleSpecification {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.setDateFormat(new SimpleDateFormat("MM-dd-yyyy"));
         mapper.registerModule(new JavaTimeModule());
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Term.class, new CollectionSerializer());
+        mapper.registerModule(module);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         mapper.writeValue(fileWriter, terms);
@@ -210,12 +217,68 @@ public class ScheduleCollection extends ScheduleSpecification {
     }
 
     @Override
-    public void loadFromJSON(String fileName) throws IOException {
+    public void loadFromJSON(String fileName, String configPath) throws IOException, DifferentDateException, TermAlreadyExistsException {
+        List<ConfigMapping> columnMappings = readConfig(configPath);
+        Map<Integer, String> mappings = new HashMap<>();
+        for(ConfigMapping configMapping : columnMappings) {
+            mappings.put(configMapping.getIndex(), configMapping.getOriginal());
+        }
+        columnMappings.sort(Comparator.comparingInt(ConfigMapping::getIndex));
+        FileReader fileReader = new FileReader(fileName);
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat("MM-dd-yyyy"));
-        objectMapper.registerModule(new JavaTimeModule());
-        File file = new File(fileName);
-        getTerms().addAll(Arrays.asList(objectMapper.readValue(file, Term[].class)));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mappings.get(-1));
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern(mappings.get(-2));
+
+        List<JsonNode> jsonNodes = objectMapper.readValue(fileReader, new TypeReference<List<JsonNode>>() {});
+
+        for(JsonNode jsonNode : jsonNodes)
+        {
+            Term term = new Term();
+            for(ConfigMapping entry : columnMappings)
+            {
+                int columnIndex = entry.getIndex();
+
+                if(columnIndex == -1 || columnIndex == -2) continue;
+
+                String columnName = entry.getCustom();
+
+                switch (mappings.get(columnIndex)) {
+                    case "name":
+                        System.out.println(jsonNode.get(columnName).asText());
+                        term.setRoom(new Room(jsonNode.get(columnName).asText(), 0, null));
+                        break;
+                    case "capacity":
+                        term.getRoom().setCapacity(jsonNode.get(columnName).asInt());
+                        break;
+                    case "equipment":
+                        term.getRoom().getEquipment().put(columnName, jsonNode.get(columnName).asInt());
+                        break;
+
+                    case "start":
+                        LocalDate startDate = LocalDate.parse(jsonNode.get(columnName).asText(), formatter);
+                        term.setTime(new Time(startDate, startDate, null, null));
+                        break;
+                    /*case "end":
+                        LocalDate endDate = LocalDate.parse(jsonNode.get(columnIndex).asText(), formatter);
+                        term.getTime().setEndDate(endDate);
+                        break;*/
+                    case "startTime":
+                        LocalTime startTime = LocalTime.parse(jsonNode.get(columnName).asText(), formatter2);
+                        term.getTime().setStartTime(startTime);
+                        break;
+                    case "endTime":
+                        LocalTime endTime = LocalTime.parse(jsonNode.get(columnName).asText(), formatter2);
+                        term.getTime().setEndTime(endTime);
+                        break;
+                    case "additionalData":
+                        term.getAdditionalData().put(columnName, jsonNode.get(columnName).asText());
+                        break;
+                }
+            }
+            addTerm(term, Time.getWeekDay(term.getTime().getStartDate()));
+        }
+
+
     }
 
     @Override
@@ -236,7 +299,7 @@ public class ScheduleCollection extends ScheduleSpecification {
             for (ConfigMapping entry : columnMappings) {
                 int columnIndex = entry.getIndex();
 
-                if(columnIndex == -1) continue;
+                if(columnIndex == -1 || columnIndex == -2) continue;
 
                 String columnName = entry.getCustom();
 
