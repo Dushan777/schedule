@@ -2,7 +2,6 @@ package org.example;
 
 import org.exceptions.DifferentDateException;
 import org.exceptions.TermAlreadyExistsException;
-import org.impl.ScheduleWeekly;
 import org.model.*;
 
 import java.io.IOException;
@@ -16,8 +15,15 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ScheduleSpecification schedule = new ScheduleWeekly();
+        try {
+            Class.forName("org.example.ScheduleWeekly");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        ScheduleSpecification schedule = ScheduleManager.getScheduleSpecification();
         List<Term> termini = schedule.getTerms();
+
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Unesite ime fajla(bez \".txt\") sa podacima o ucionicama, datumima trajanja rasporeda i iskljucenim danima:");
         while(true) {

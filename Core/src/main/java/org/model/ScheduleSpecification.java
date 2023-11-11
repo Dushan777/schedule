@@ -38,6 +38,7 @@ public abstract class ScheduleSpecification {
      * sets beginningDate, endingDate and excludedDays
      * adds rooms
      * @param filePath path of a file from which schedule is initialized
+     * @throws IOException input output exception
      */
     public void initialize(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -354,7 +355,7 @@ public abstract class ScheduleSpecification {
     /**
      * Filter by rooms
      * @param name if "" or null, it is not used in filtering
-     * @param capacity if <= 0, it is not used in filtering
+     * @param capacity if less than or equal to 0, it is not used in filtering
      * @param equipment if empty or null, it is not used in filtering
      * @param booked if true, filter booked terms, if false, filter free terms
      * @return filtered terms
@@ -459,7 +460,7 @@ public abstract class ScheduleSpecification {
      * Filter by everything
      * Combination of filterByRooms and filterByTimeOrAdditionalData
      * @param name room name, if "" or null, it is not used in filtering
-     * @param capacity room capacity, if <= 0, it is not used in filtering
+     * @param capacity room capacity, if less than or equal to 0, it is not used in filtering
      * @param equipment room equipment, if empty or null, it is not used in filtering
      * @param time if any part of time is null, it is not used in filtering
      * @param additionalData if empty or null, it is not used in filtering
@@ -500,7 +501,9 @@ public abstract class ScheduleSpecification {
      * load schedule from JSON file
      * @param fileName name of the file
      * @param configPath name of config file
-     * @throws IOException, TermAlreadyExistsException, DifferentDateException
+     * @throws IOException input output exception
+     * @throws TermAlreadyExistsException term already exists
+     * @throws DifferentDateException startDate and endDate are different
      */
     public abstract void loadFromJSON(String fileName, String configPath) throws IOException, TermAlreadyExistsException, DifferentDateException;
 
@@ -508,7 +511,9 @@ public abstract class ScheduleSpecification {
      * load schedule from CSV file
      * @param fileName name of file you want to load from
      * @param configPath name of config file
-     * @throws IOException, DifferentDateException, TermAlreadyExistsException
+     * @throws IOException input output exception
+     * @throws TermAlreadyExistsException term already exists
+     * @throws DifferentDateException startDate and endDate are different
      */
     public abstract void loadFromCSV(String fileName, String configPath) throws IOException, DifferentDateException, TermAlreadyExistsException;
 

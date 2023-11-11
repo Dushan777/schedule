@@ -1,6 +1,6 @@
 import org.exceptions.RoomAlreadyExistsException;
 import org.exceptions.TermAlreadyExistsException;
-import org.impl.ScheduleWeekly;
+import org.example.ScheduleWeekly;
 import org.junit.jupiter.api.Test;
 import org.model.LittleTerm;
 import org.model.Room;

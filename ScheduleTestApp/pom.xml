@@ -26,13 +26,7 @@
             <groupId>org.example.schedule</groupId>
             <artifactId>ScheduleWeekly</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.example.schedule</groupId>
-            <artifactId>ScheduleCollection</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

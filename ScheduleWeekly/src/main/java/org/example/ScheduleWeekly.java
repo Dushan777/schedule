@@ -1,4 +1,4 @@
-package org.impl;
+package org.example;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,6 +31,9 @@ import java.util.*;
 
 public class ScheduleWeekly extends ScheduleSpecification {
 
+    static {
+        ScheduleManager.setScheduleSpecification(new ScheduleWeekly());
+    }
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private boolean revert = false;

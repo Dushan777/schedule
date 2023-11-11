@@ -34,6 +34,9 @@ import java.util.*;
 
 public class ScheduleCollection extends ScheduleSpecification {
 
+    static {
+        ScheduleManager.setScheduleSpecification(new ScheduleCollection());
+    }
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private boolean change = false;
@@ -244,7 +247,6 @@ public class ScheduleCollection extends ScheduleSpecification {
 
                 switch (mappings.get(columnIndex)) {
                     case "name":
-                        System.out.println(jsonNode.get(columnName).asText());
                         term.setRoom(new Room(jsonNode.get(columnName).asText(), 0, null));
                         break;
                     case "capacity":
