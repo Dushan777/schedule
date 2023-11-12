@@ -473,7 +473,6 @@ public class Main {
                     }
                     break;
                 case 15:
-                    //TODO: dodati nove stranice na npr. 20 termina
                     try {
                         scanner = new Scanner(System.in);
                         System.out.println("Unesite ime fajla");
@@ -497,5 +496,4 @@ public class Main {
 
 
     }
-
 }
