@@ -18,18 +18,18 @@ public class Main {
         try {
             Class.forName("org.example.ScheduleWeekly");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         ScheduleSpecification schedule = ScheduleManager.getScheduleSpecification();
         List<Term> termini = schedule.getTerms();
 
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Unesite ime fajla(bez \".txt\") sa podacima o ucionicama, datumima trajanja rasporeda i iskljucenim danima:");
+        System.out.println("Unesite putanju do fajla sa podacima o ucionicama, datumima trajanja rasporeda i iskljucenim danima:");
         while(true) {
             try {
                 String path = scanner.nextLine();
-                schedule.initialize("ScheduleTestApp/src/main/resources/" + path + ".txt");
+                schedule.initialize(path);
                 break;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -419,10 +419,10 @@ public class Main {
                 case 11:
                     try {
                         scanner = new Scanner(System.in);
-                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla. Ne unositi ekstenzije!");
+                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla.");
                         String line = scanner.nextLine();
-                        schedule.loadFromCSV("ScheduleTestApp/src/main/resources/"+line.split(",")[0]+".csv",
-                                "ScheduleTestApp/src/main/resources/"+line.split(",")[1]+".txt");
+                        schedule.loadFromCSV(line.split(",")[0],
+                                line.split(",")[1]);
                         for(Term t : schedule.getTerms())
                             System.out.println(t);
                     } catch (IOException e) {
@@ -441,14 +441,14 @@ public class Main {
                 case 12:
                     try {
                         scanner = new Scanner(System.in);
-                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla. Ne unositi ekstenzije!");
+                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla.");
                         String line = scanner.nextLine();
-                        schedule.loadFromJSON("ScheduleTestApp/src/main/resources/"+line.split(",")[0]+".json",
-                                "ScheduleTestApp/src/main/resources/"+line.split(",")[1]+".txt");
+                        schedule.loadFromJSON(line.split(",")[0],
+                                line.split(",")[1]);
                         for(Term t : schedule.getTerms())
                             System.out.println(t);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 case 13:
@@ -456,7 +456,7 @@ public class Main {
                         scanner = new Scanner(System.in);
                         System.out.println("Unesite ime fajla");
                         String line = scanner.nextLine();
-                        schedule.saveAsCSV(termini,"ScheduleTestApp/src/main/resources/"+line+".csv");
+                        schedule.saveAsCSV(termini,line);
 
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
@@ -467,7 +467,7 @@ public class Main {
                         scanner = new Scanner(System.in);
                         System.out.println("Unesite ime fajla");
                         String line = scanner.nextLine();
-                        schedule.saveAsJSON(termini,"ScheduleTestApp/src/main/resources/"+line+".json");
+                        schedule.saveAsJSON(termini,line);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
@@ -477,7 +477,7 @@ public class Main {
                         scanner = new Scanner(System.in);
                         System.out.println("Unesite ime fajla");
                         String line = scanner.nextLine();
-                        schedule.saveAsPDF(termini,"ScheduleTestApp/src/main/resources/"+line+".pdf");
+                        schedule.saveAsPDF(termini,line);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
