@@ -419,7 +419,7 @@ public class Main {
                 case 11:
                     try {
                         scanner = new Scanner(System.in);
-                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla.");
+                        System.out.println("Unesite putanju do fajla i config fajla u formatu: imeFajla,imeConfigFajla.");
                         String line = scanner.nextLine();
                         schedule.loadFromCSV(line.split(",")[0],
                                 line.split(",")[1]);
@@ -441,7 +441,7 @@ public class Main {
                 case 12:
                     try {
                         scanner = new Scanner(System.in);
-                        System.out.println("Unesite ime fajla i config fajla u formatu: imeFajla,imeConfigFajla.");
+                        System.out.println("Unesite putanju do fajla i config fajla u formatu: imeFajla,imeConfigFajla.");
                         String line = scanner.nextLine();
                         schedule.loadFromJSON(line.split(",")[0],
                                 line.split(",")[1]);
